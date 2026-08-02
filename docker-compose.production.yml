@@ -1,0 +1,18 @@
+# Overrides for production: docker compose -f docker-compose.yml -f docker-compose.production.yml up -d
+services:
+  nginx:
+    restart: always
+    ports:
+      - "8080:80"
+
+  php:
+    restart: always
+
+  db:
+    restart: always
+    volumes:
+      - db-data:/var/lib/mysql
+      - ./docker/backups:/backups
+
+  redis:
+    restart: always

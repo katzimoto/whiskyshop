@@ -1,0 +1,36 @@
+{
+    "name": "omef/the-omef-com",
+    "description": "the-omef.com — WordPress + WooCommerce theme and integration adapters",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.1"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.9",
+        "wp-coding-standards/wpcs": "^3.1",
+        "phpcompatibility/phpcompatibility-wp": "^2.1",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+        "phpunit/phpunit": "^10.5"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "scripts": {
+        "lint": "find wp-content inc -name '*.php' -print0 | xargs -0 -n1 php -l",
+        "phpcs": "phpcs",
+        "test": "phpunit"
+    },
+    "autoload": {
+        "psr-4": {
+            "Omef\\": "inc/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Omef\\Tests\\": "tests/"
+        }
+    }
+}

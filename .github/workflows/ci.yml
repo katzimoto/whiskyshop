@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  php-lint:
+    name: PHP lint & coding standards
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          coverage: none
+          tools: composer:v2
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Syntax check (php -l)
+        run: composer run lint
+
+      - name: WordPress Coding Standards
+        run: composer run phpcs
+
+  phpunit:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          coverage: none
+          tools: composer:v2
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-
+
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Run PHPUnit
+        run: composer run test
+
+  docker-compose-validate:
+    name: Validate Docker Compose configs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate local config
+        run: |
+          cp .env.example .env.local
+          docker compose --env-file .env.local -f docker-compose.yml config -q
+
+      - name: Validate staging overlay
+        run: |
+          cp .env.example .env.staging
+          docker compose --env-file .env.staging -f docker-compose.yml -f docker-compose.staging.yml config -q
+
+      - name: Validate production overlay
+        run: |
+          cp .env.example .env.production
+          docker compose --env-file .env.production -f docker-compose.yml -f docker-compose.production.yml config -q
+
+      - name: Build php image
+        run: docker compose -f docker-compose.yml build php

@@ -1,0 +1,31 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/theme.json",
+    "version": 2,
+    "settings": {
+        "layout": {
+            "contentSize": "720px",
+            "wideSize": "1200px"
+        },
+        "typography": {
+            "fontFamilies": [
+                {
+                    "fontFamily": "Heebo, sans-serif",
+                    "name": "Heebo",
+                    "slug": "heebo"
+                }
+            ]
+        }
+    },
+    "templateParts": [
+        {
+            "name": "header",
+            "title": "Header",
+            "area": "header"
+        },
+        {
+            "name": "footer",
+            "title": "Footer",
+            "area": "footer"
+        }
+    ]
+}

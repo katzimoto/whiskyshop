@@ -1,0 +1,52 @@
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    depends_on:
+      - php
+    ports:
+      - "8080:80"
+    volumes:
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./wp-content:/var/www/html/wp-content:ro
+    restart: unless-stopped
+
+  php:
+    build:
+      context: ./docker/php
+    depends_on:
+      - db
+      - redis
+    environment:
+      WORDPRESS_DB_HOST: ${DB_HOST:-db}
+      WORDPRESS_DB_NAME: ${DB_NAME:-omef}
+      WORDPRESS_DB_USER: ${DB_USER:-omef}
+      WORDPRESS_DB_PASSWORD: ${DB_PASSWORD:-changeme}
+      WORDPRESS_CONFIG_EXTRA: |
+        define('WP_REDIS_HOST', '${REDIS_HOST:-redis}');
+        define('WP_REDIS_PORT', ${REDIS_PORT:-6379});
+        define('WP_ENVIRONMENT_TYPE', '${WP_ENV:-local}');
+        putenv('PAYMENT_DRIVER=${PAYMENT_DRIVER:-mock}');
+        putenv('INVOICE_DRIVER=${INVOICE_DRIVER:-mock}');
+        putenv('FEED_DRIVER=${FEED_DRIVER:-mock}');
+        putenv('MAIL_DRIVER=${MAIL_DRIVER:-mock}');
+    volumes:
+      - ./wp-content:/var/www/html/wp-content
+    restart: unless-stopped
+
+  db:
+    image: mariadb:11
+    environment:
+      MARIADB_DATABASE: ${DB_NAME:-omef}
+      MARIADB_USER: ${DB_USER:-omef}
+      MARIADB_PASSWORD: ${DB_PASSWORD:-changeme}
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-changeme}
+    volumes:
+      - db-data:/var/lib/mysql
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+volumes:
+  db-data:

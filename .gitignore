@@ -1,0 +1,11 @@
+/vendor/
+/node_modules/
+.env
+.env.*
+!.env.example
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/cache/
+*.log
+.DS_Store
+.phpunit.result.cache

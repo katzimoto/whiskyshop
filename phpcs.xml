@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<ruleset name="the-omef.com">
+    <description>Coding standard for the-omef.com</description>
+
+    <file>./wp-content/themes/omef</file>
+    <file>./wp-content/mu-plugins</file>
+    <file>./inc</file>
+
+    <arg name="extensions" value="php"/>
+    <arg name="colors"/>
+    <arg value="sp"/>
+
+    <config name="minimum_supported_wp_version" value="6.5"/>
+
+    <rule ref="WordPress">
+        <exclude name="WordPress.Files.FileName"/>
+    </rule>
+    <rule ref="PHPCompatibilityWP"/>
+    <config name="testVersion" value="8.1-"/>
+</ruleset>

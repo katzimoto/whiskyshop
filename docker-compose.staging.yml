@@ -1,0 +1,15 @@
+# Overrides for staging: docker compose -f docker-compose.yml -f docker-compose.staging.yml up -d
+services:
+  nginx:
+    restart: always
+    ports:
+      - "8080:80"
+
+  php:
+    restart: always
+
+  db:
+    restart: always
+
+  redis:
+    restart: always
