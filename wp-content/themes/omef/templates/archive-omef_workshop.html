@@ -5,23 +5,29 @@
 	<!-- wp:group {"align":"wide","className":"omef-section-heading","layout":{"type":"constrained"}} -->
 	<div class="wp-block-group alignwide omef-section-heading">
 		<!-- wp:paragraph {"className":"omef-eyebrow"} -->
-		<p class="omef-eyebrow">חוזק חבית · סדנאות</p>
+		<p class="omef-eyebrow">חוזק חבית · סדנאות פרטיות</p>
 		<!-- /wp:paragraph -->
 		<!-- wp:query-title {"type":"archive","showPrefix":false} /-->
+		<!-- wp:paragraph {"fontSize":"large"} -->
+		<p class="has-large-font-size">סדנת וויסקי היא הזדמנות להריח, לטעום ולשוחח בלי פורמליות מיותרת — להפי אאוור במשרד, יום הולדת, אירוע חברה או סתם ערב עם חברים. מגיעים אליכם, לכל מקום ובכל שעה, ומתאימים את הסדנה לקבוצה ולנושא שמעניין אתכם. בחרו נושא מהרשימה למטה או פנו אלינו ונמצא יחד את הסדנה המושלמת.</p>
+		<!-- /wp:paragraph -->
+		<!-- wp:buttons -->
+		<div class="wp-block-buttons">
+			<!-- wp:button -->
+			<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/contact">לתיאום סדנה</a></div>
+			<!-- /wp:button -->
+		</div>
+		<!-- /wp:buttons -->
 	</div>
 	<!-- /wp:group -->
 	<!-- wp:query {"queryId":1,"query":{"perPage":12,"pages":0,"offset":0,"postType":"omef_workshop","order":"desc","orderBy":"date","inherit":true},"align":"wide","layout":{"type":"default"}} -->
 	<div class="wp-block-query alignwide">
-		<!-- wp:post-template {"className":"omef-workshop-gallery","layout":{"type":"grid","columnCount":3}} -->
-			<!-- wp:group {"className":"omef-gallery-card","layout":{"type":"constrained"}} -->
-			<div class="wp-block-group omef-gallery-card">
-				<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"1","className":"omef-gallery-card__image"} /-->
-				<!-- wp:group {"className":"omef-gallery-card__caption","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between"}} -->
-				<div class="wp-block-group omef-gallery-card__caption">
-					<!-- wp:post-title {"isLink":true,"fontSize":"medium"} /-->
-					<!-- wp:post-date {"fontSize":"small"} /-->
-				</div>
-				<!-- /wp:group -->
+		<!-- wp:post-template {"layout":{"type":"grid","columnCount":2}} -->
+			<!-- wp:group {"className":"omef-episode-card","style":{"spacing":{"blockGap":"0.75rem"}},"layout":{"type":"constrained"}} -->
+			<div class="wp-block-group omef-episode-card">
+				<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/9"} /-->
+				<!-- wp:post-title {"isLink":true,"fontSize":"x-large"} /-->
+				<!-- wp:post-excerpt {"moreText":"לסדנה"} /-->
 			</div>
 			<!-- /wp:group -->
 		<!-- /wp:post-template -->

@@ -516,6 +516,49 @@ select:focus-visible {
   margin-bottom: 0;
 }
 
+.omef-contact-form {
+  display: grid;
+  gap: 1.1rem;
+  margin-top: 1.5rem;
+  max-width: 32rem;
+}
+
+.omef-contact-form label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+.omef-contact-form input,
+.omef-contact-form textarea {
+  border: 1px solid color-mix(in srgb, var(--omef-ink) 25%, transparent);
+  box-sizing: border-box;
+  font: inherit;
+  padding: 0.7rem 0.8rem;
+  width: 100%;
+}
+
+.omef-contact-form button {
+  background: var(--omef-ink);
+  border: 0;
+  color: var(--omef-paper);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  padding: 0.9rem 1.3rem;
+}
+
+.omef-contact-form button:hover {
+  opacity: 0.85;
+}
+
+.omef-form-notice {
+  background: var(--omef-paper-deep);
+  border-right: 3px solid var(--omef-brass);
+  margin: 0 0 1.5rem;
+  padding: 0.9rem 1.1rem;
+}
+
 .omef-tasting-details {
   background: var(--omef-paper-deep);
   border-right: 3px solid var(--omef-brass);

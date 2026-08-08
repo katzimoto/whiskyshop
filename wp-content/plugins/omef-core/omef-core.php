@@ -26,10 +26,12 @@ $omef_includes = array(
 	'publish-guardrails.php',
 	'abandoned-cart.php',
 	'mail.php',
+	'leads.php',
 	'dashboard.php',
 	'dashboard-products.php',
 	'dashboard-orders.php',
 	'dashboard-shipping.php',
+	'dashboard-leads.php',
 );
 foreach ( $omef_includes as $omef_include ) {
 	require_once __DIR__ . '/includes/' . $omef_include;
@@ -39,6 +41,7 @@ function omef_activate(): void {
 	omef_register_content_types();
 	omef_abandoned_create_table();
 	omef_redirect_create_table();
+	omef_leads_create_table();
 	if ( ! wp_next_scheduled( 'omef_abandoned_reminder_cron' ) ) {
 		wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'omef_abandoned_reminder_cron' );
 	}

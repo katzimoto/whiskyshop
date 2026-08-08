@@ -13,7 +13,6 @@ function omef_add_meta_boxes(): void {
 
 	add_meta_box( 'omef_episode_products', 'בקבוקים מהפרק', 'omef_render_episode_products_box', 'omef_episode', 'side', 'default' );
 	add_meta_box( 'omef_tasting_product', 'מוצר WooCommerce מקושר', 'omef_render_tasting_product_box', 'omef_tasting', 'side', 'default' );
-	add_meta_box( 'omef_workshop_product', 'כרטיסים ומוצר מקושר', 'omef_render_workshop_product_box', 'omef_workshop', 'side', 'default' );
 	add_meta_box( 'omef_product_episodes', 'פרקים קשורים', 'omef_render_product_episodes_box', 'product', 'side', 'default' );
 }
 add_action( 'add_meta_boxes', 'omef_add_meta_boxes' );
@@ -67,22 +66,6 @@ function omef_render_tasting_product_box( WP_Post $post ): void {
 	$whatsapp = omef_tasting_whatsapp_text( $post->ID );
 	if ( $whatsapp ) {
 		echo '<p style="margin-top:14px"><strong>הודעת ווטסאפ:</strong></p><textarea class="widefat" rows="6" readonly>' . esc_textarea( $whatsapp ) . '</textarea><p class="description">העתיקו והדביקו בכל קבוצה.</p>';
-	}
-}
-
-function omef_render_workshop_product_box( WP_Post $post ): void {
-	wp_nonce_field( 'omef_save_meta', 'omef_meta_nonce' );
-	$current  = absint( get_post_meta( $post->ID, '_omef_workshop_product_id', true ) );
-	$products = get_posts( array( 'post_type' => 'product', 'post_status' => array( 'publish', 'draft' ), 'posts_per_page' => 200, 'orderby' => 'title', 'order' => 'ASC' ) );
-
-	echo '<p>עם מחיר לכרטיס ומספר מקומות, מוצר הזמנות נוצר אוטומטית. מחיר, מלאי והזמנות מנוהלים במוצר WooCommerce.</p><select class="widefat" name="_omef_workshop_product_id"><option value="">בחירת מוצר</option>';
-	foreach ( $products as $product ) {
-		echo '<option value="' . esc_attr( $product->ID ) . '" ' . selected( $product->ID, $current, false ) . '>' . esc_html( $product->post_title ) . '</option>';
-	}
-	echo '</select>';
-
-	if ( $current ) {
-		echo '<p style="margin-top:10px"><a href="' . esc_url( get_edit_post_link( $current ) ) . '">עריכת המוצר ↗</a></p>';
 	}
 }
 
@@ -159,15 +142,6 @@ function omef_save_meta( int $post_id, WP_Post $post ): void {
 		$seats = (int) get_post_meta( $post_id, '_omef_tasting_seats', true );
 		omef_ensure_tasting_product( $post_id, $post, $price, $seats );
 	}
-
-	if ( $post->post_type === 'omef_workshop' ) {
-		$product_id = absint( $_POST['_omef_workshop_product_id'] ?? 0 );
-		update_post_meta( $post_id, '_omef_workshop_product_id', get_post_type( $product_id ) === 'product' ? $product_id : 0 );
-
-		$price = (float) get_post_meta( $post_id, '_omef_workshop_price', true );
-		$seats = (int) get_post_meta( $post_id, '_omef_workshop_seats', true );
-		omef_ensure_workshop_product( $post_id, $post, $price, $seats );
-	}
 }
 add_action( 'save_post', 'omef_save_meta', 10, 2 );
 
@@ -198,38 +172,6 @@ function omef_ensure_tasting_product( int $post_id, WP_Post $post, float $price,
 	$product_id = $product->save();
 	if ( $product_id ) {
 		update_post_meta( $post_id, '_omef_tasting_product_id', $product_id );
-	}
-
-	return $product_id;
-}
-
-function omef_ensure_workshop_product( int $post_id, WP_Post $post, float $price, int $seats ): int {
-	if ( ! function_exists( 'wc_get_product' ) ) {
-		return 0;
-	}
-
-	$product_id = absint( get_post_meta( $post_id, '_omef_workshop_product_id', true ) );
-	if ( $product_id && get_post_type( $product_id ) === 'product' ) {
-		return $product_id;
-	}
-
-	if ( $price <= 0 || $seats <= 0 ) {
-		return 0;
-	}
-
-	$product = new WC_Product_Simple();
-	$product->set_name( $post->post_title );
-	$product->set_status( 'publish' );
-	$product->set_slug( get_post_field( 'post_name', $post_id ) . '-workshop' );
-	$product->set_regular_price( (string) $price );
-	$product->set_manage_stock( true );
-	$product->set_stock_quantity( $seats );
-	$product->set_stock_status( 'instock' );
-	$product->add_meta_data( '_omef_workshop_id', $post_id );
-
-	$product_id = $product->save();
-	if ( $product_id ) {
-		update_post_meta( $post_id, '_omef_workshop_product_id', $product_id );
 	}
 
 	return $product_id;
