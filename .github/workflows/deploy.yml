@@ -43,14 +43,14 @@ jobs:
 
       - name: Sync omef-core plugin
         run: |
-          rsync -az --checksum --delete \
+          rsync -az --checksum --delete --mkpath \
             -e "ssh -p '${{ secrets.SSH_PORT || '22' }}' -o StrictHostKeyChecking=accept-new" \
             ./wp-content/plugins/omef-core/ \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/wp-content/plugins/omef-core/"
 
       - name: Sync omef theme
         run: |
-          rsync -az --checksum --delete \
+          rsync -az --checksum --delete --mkpath \
             -e "ssh -p '${{ secrets.SSH_PORT || '22' }}' -o StrictHostKeyChecking=accept-new" \
             ./wp-content/themes/omef/ \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/wp-content/themes/omef/"
