@@ -45,6 +45,13 @@ function omef_redirect_customers_away_from_admin(): void {
 		return;
 	}
 
+	// admin-post.php also serves front-end form submissions (contact form,
+	// abandoned-cart links, etc.) for logged-out visitors — only guard actual
+	// wp-admin screens, not that shared action-processing endpoint.
+	if ( in_array( $GLOBALS['pagenow'] ?? '', array( 'admin-post.php', 'admin-ajax.php' ), true ) ) {
+		return;
+	}
+
 	if ( ! current_user_can( 'edit_posts' ) ) {
 		wp_safe_redirect( home_url( '/' ) );
 		exit;
