@@ -1,0 +1,63 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'wp-content/plugins/omef-core/**'
+      - 'wp-content/themes/omef/**'
+  workflow_dispatch:
+
+concurrency:
+  group: vps-deploy
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: PHP syntax check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PHP
+        run: sudo apt-get update && sudo apt-get install -y php-cli
+      - name: Lint custom plugin and theme
+        run: |
+          find wp-content/plugins/omef-core wp-content/themes/omef -name '*.php' -print0 | xargs -0 -n1 php -l || exit 1
+
+  deploy:
+    name: Deploy wp-content to VPS
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install rsync
+        run: sudo apt-get update && sudo apt-get install -y rsync
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          if_key_exists: fail
+
+      - name: Sync omef-core plugin
+        run: |
+          rsync -az --checksum --delete \
+            -e "ssh -p '${{ secrets.SSH_PORT || '22' }}' -o StrictHostKeyChecking=accept-new" \
+            ./wp-content/plugins/omef-core/ \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/wp-content/plugins/omef-core/"
+
+      - name: Sync omef theme
+        run: |
+          rsync -az --checksum --delete \
+            -e "ssh -p '${{ secrets.SSH_PORT || '22' }}' -o StrictHostKeyChecking=accept-new" \
+            ./wp-content/themes/omef/ \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/wp-content/themes/omef/"
+
+      - name: Post-deploy command (optional)
+        if: ${{ secrets.DEPLOY_REMOTE_CMD != '' }}
+        run: |
+          ssh -p '${{ secrets.SSH_PORT || '22' }}' \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            "${{ secrets.DEPLOY_REMOTE_CMD }}"
