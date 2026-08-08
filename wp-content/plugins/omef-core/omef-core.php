@@ -15,6 +15,7 @@ $omef_includes = array(
 	'content-types.php',
 	'product-meta.php',
 	'frontend.php',
+	'discounts.php',
 	'podcast.php',
 	'shop-manager.php',
 	'age-gate.php',

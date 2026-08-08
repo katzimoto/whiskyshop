@@ -64,6 +64,8 @@ function omef_fields(): array {
 			'_omef_peated'        => array( 'label' => 'מעושן', 'type' => 'boolean' ),
 			'_omef_tasting_notes' => array( 'label' => 'הערות טעימה', 'type' => 'textarea' ),
 			'_omef_sample_price'  => array( 'label' => 'מחיר דגימה של 30 מ"ל (₪, אופציונלי)', 'type' => 'decimal' ),
+			'_omef_sale_price'    => array( 'label' => 'מחיר מבצע (₪, אופציונלי)', 'type' => 'decimal' ),
+			'_omef_sale_note'     => array( 'label' => 'סיבת המבצע (למשל: משחרור לקראת סגירת חבית)', 'type' => 'text' ),
 		),
 		'omef_episode' => array(
 			'_omef_episode_number'  => array( 'label' => 'מספר פרק', 'type' => 'integer' ),
