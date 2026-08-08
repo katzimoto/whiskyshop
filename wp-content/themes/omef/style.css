@@ -1,0 +1,328 @@
+/*
+Theme Name: Omef
+Theme URI: https://the-omef.com/
+Author: The Omef
+Description: RTL-native block theme for The Omef.
+Version: 0.1.0
+Requires at least: 6.8
+Requires PHP: 8.3
+Text Domain: omef
+*/
+
+:root {
+  --omef-ink: #142521;
+  --omef-ink-soft: #223832;
+  --omef-paper: #f4efe5;
+  --omef-paper-deep: #e7dece;
+  --omef-brass: #bd8e4b;
+  --omef-clay: #a9482e;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--omef-paper);
+}
+
+a {
+  text-underline-offset: 0.2em;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--omef-brass);
+  outline-offset: 3px;
+}
+
+.omef-site-header {
+  background: var(--omef-ink);
+  border-bottom: 1px solid color-mix(in srgb, var(--omef-paper) 20%, transparent);
+  color: var(--omef-paper);
+}
+
+.omef-site-header .wp-block-site-title a,
+.omef-site-header .wp-block-navigation-item__content {
+  color: var(--omef-paper);
+}
+
+.omef-site-header .wp-block-site-title {
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
+  letter-spacing: -0.04em;
+}
+
+.omef-site-header .wp-block-navigation__responsive-container-open {
+  color: var(--omef-paper);
+}
+
+.omef-hero {
+  background:
+    linear-gradient(115deg, rgba(20, 37, 33, 0.98), rgba(20, 37, 33, 0.82)),
+    radial-gradient(circle at 80% 20%, rgba(189, 142, 75, 0.3), transparent 28%);
+  color: var(--omef-paper);
+  min-height: 62vh;
+}
+
+.omef-eyebrow {
+  color: var(--omef-brass);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.omef-hero h1 {
+  font-size: clamp(3rem, 8vw, 7rem);
+  letter-spacing: -0.07em;
+  line-height: 0.88;
+  max-width: 9ch;
+}
+
+.omef-hero .wp-block-button__link {
+  background: var(--omef-brass);
+  color: var(--omef-ink);
+}
+
+.omef-section-heading {
+  border-top: 2px solid var(--omef-ink);
+  padding-top: 1rem;
+}
+
+.omef-section-heading h2 {
+  letter-spacing: -0.05em;
+}
+
+.omef-site-footer {
+  background: var(--omef-ink);
+  color: var(--omef-paper);
+  margin-top: 5rem;
+}
+
+.omef-site-footer a {
+  color: var(--omef-paper);
+}
+
+.omef-site-footer .wp-block-site-title {
+  font-size: 1.2rem;
+}
+
+.wp-block-button__link,
+.woocommerce a.button,
+.woocommerce button.button,
+.woocommerce input.button {
+  background: var(--omef-ink);
+  border-radius: 0;
+  color: var(--omef-paper);
+  font-weight: 700;
+  padding: 0.8rem 1.3rem;
+}
+
+.woocommerce ul.products li.product .woocommerce-loop-product__title {
+  color: var(--omef-ink);
+  font-size: 1.15rem;
+}
+
+.woocommerce span.onsale {
+  background: var(--omef-clay);
+  border-radius: 0;
+  min-height: auto;
+  min-width: auto;
+  padding: 0.35rem 0.6rem;
+}
+
+.omef-product-facts {
+  border-block: 1px solid var(--omef-paper-deep);
+  margin-block: 1.5rem;
+  padding-block: 1rem;
+}
+
+.omef-product-facts h2,
+.omef-product-episodes h2 {
+  font-size: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.omef-product-facts dl {
+  display: grid;
+  gap: 0.55rem 1rem;
+  grid-template-columns: max-content 1fr;
+  margin: 0;
+}
+
+.omef-product-facts dt {
+  color: color-mix(in srgb, var(--omef-ink) 62%, var(--omef-paper));
+}
+
+.omef-product-facts dd {
+  font-weight: 700;
+  margin: 0;
+}
+
+.omef-product-notes {
+  border-right: 3px solid var(--omef-brass);
+  margin: 1.25rem 0 0;
+  padding-right: 1rem;
+}
+
+.omef-product-episodes {
+  background: var(--omef-paper-deep);
+  margin-top: 3rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+}
+
+.omef-product-episodes ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.omef-product-episodes li + li {
+  border-top: 1px solid color-mix(in srgb, var(--omef-ink) 18%, transparent);
+  margin-top: 0.65rem;
+  padding-top: 0.65rem;
+}
+
+.omef-product-card-facts {
+  color: color-mix(in srgb, var(--omef-ink) 72%, var(--omef-paper));
+  font-size: 0.85rem;
+  margin: 0.35rem 0;
+}
+
+.omef-episode-card {
+  border-top: 2px solid var(--omef-ink);
+  padding-top: 1rem;
+}
+
+.omef-episode-card .wp-block-post-date {
+  color: color-mix(in srgb, var(--omef-ink) 62%, var(--omef-paper));
+}
+
+.omef-episode-products {
+  background: var(--omef-paper-deep);
+  margin-top: 3rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+}
+
+.omef-episode-products h2 {
+  margin-top: 0;
+}
+
+.omef-episode-products ul {
+  display: grid;
+  gap: 0.7rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.omef-episode-products a {
+  font-weight: 700;
+}
+
+.omef-alcohol-notice {
+  background: var(--omef-paper-deep);
+  border-right: 3px solid var(--omef-brass);
+  font-size: 0.9rem;
+  margin: 0 0 1.5rem;
+  padding: 0.75rem 1rem;
+}
+
+.omef-age-gate {
+  background: var(--omef-ink);
+  color: var(--omef-paper);
+}
+
+.omef-age-gate__main {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1.5rem;
+}
+
+.omef-age-gate__card {
+  background: var(--omef-paper);
+  color: var(--omef-ink);
+  max-width: 38rem;
+  padding: clamp(2rem, 7vw, 5rem);
+}
+
+.omef-age-gate__card h1 {
+  font-size: clamp(2.5rem, 8vw, 5rem);
+  letter-spacing: -0.07em;
+  margin: 0.25rem 0 1.5rem;
+}
+
+.omef-age-gate__card form {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.omef-age-gate__confirm {
+  font-weight: 700;
+}
+
+.omef-age-gate__card button {
+  background: var(--omef-ink);
+  border: 0;
+  color: var(--omef-paper);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  padding: 0.9rem 1.25rem;
+}
+
+.omef-age-gate__error {
+  color: #9c2d1e;
+  font-weight: 700;
+}
+
+.omef-age-gate__leave {
+  font-size: 0.9rem;
+  margin-bottom: 0;
+}
+
+.omef-tasting-details {
+  background: var(--omef-paper-deep);
+  border-right: 3px solid var(--omef-brass);
+  margin: 0 0 2rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+}
+
+.omef-tasting-details dl {
+  display: grid;
+  gap: 0.7rem;
+  margin: 0 0 1.25rem;
+}
+
+.omef-tasting-details dl div + div {
+  border-top: 1px solid color-mix(in srgb, var(--omef-ink) 18%, transparent);
+  padding-top: 0.7rem;
+}
+
+.omef-tasting-details .wp-element-button {
+  background: var(--omef-ink);
+  color: var(--omef-paper);
+  display: inline-block;
+  font-weight: 700;
+  padding: 0.8rem 1.3rem;
+  text-decoration: none;
+}
+
+@media (max-width: 600px) {
+  .omef-site-header {
+    padding-block: 0.1rem;
+  }
+
+  .omef-hero {
+    min-height: 70vh;
+  }
+
+  .omef-hero h1 {
+    font-size: clamp(3.2rem, 18vw, 5rem);
+  }
+}

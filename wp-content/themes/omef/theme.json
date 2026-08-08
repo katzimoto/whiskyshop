@@ -1,0 +1,63 @@
+{
+  "$schema": "https://schemas.wp.org/wp/6.8/theme.json",
+  "version": 3,
+  "settings": {
+    "appearanceTools": true,
+    "color": {
+      "palette": [
+        { "color": "#142521", "name": "ירוק עמוק", "slug": "ink" },
+        { "color": "#f4efe5", "name": "קלף", "slug": "paper" },
+        { "color": "#bd8e4b", "name": "פליז", "slug": "brass" },
+        { "color": "#a9482e", "name": "טרה קוטה", "slug": "clay" }
+      ]
+    },
+    "layout": {
+      "contentSize": "720px",
+      "wideSize": "1180px"
+    },
+    "spacing": {
+      "spacingSizes": [
+        { "size": "0.5rem", "slug": "20", "name": "קטן" },
+        { "size": "1rem", "slug": "30", "name": "רגיל" },
+        { "size": "2rem", "slug": "50", "name": "גדול" },
+        { "size": "4rem", "slug": "70", "name": "גדול מאוד" },
+        { "size": "7rem", "slug": "90", "name": "ענק" }
+      ]
+    },
+    "typography": {
+      "fontFamilies": [
+        {
+          "fontFamily": "Heebo, Assistant, Arial, sans-serif",
+          "name": "Heebo",
+          "slug": "heebo"
+        }
+      ],
+      "fluid": true
+    }
+  },
+  "styles": {
+    "color": {
+      "background": "var:preset|color|paper",
+      "text": "var:preset|color|ink"
+    },
+    "typography": {
+      "fontFamily": "var:preset|font-family|heebo",
+      "lineHeight": "1.6"
+    },
+    "elements": {
+      "heading": {
+        "typography": {
+          "fontWeight": "800",
+          "lineHeight": "1.05"
+        }
+      },
+      "link": {
+        "color": { "text": "var:preset|color|ink" }
+      }
+    }
+  },
+  "templateParts": [
+    { "area": "header", "name": "header", "title": "כותרת עליונה" },
+    { "area": "footer", "name": "footer", "title": "כותרת תחתונה" }
+  ]
+}

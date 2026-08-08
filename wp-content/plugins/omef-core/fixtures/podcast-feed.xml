@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>חוזק חבית - Fixture</title>
+    <link>https://the-omef.example/podcast</link>
+    <description>Feed fixture for importer tests.</description>
+    <item>
+      <guid isPermaLink="false">omef-fixture-001</guid>
+      <title>פרק 1: להתחיל מבקבוק טוב</title>
+      <link>https://open.spotify.com/episode/fixture001</link>
+      <description>הפרק הראשון בפיד הבדיקה.</description>
+      <pubDate>Mon, 03 Aug 2026 08:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">omef-fixture-002</guid>
+      <title>פרק 2: מה מספרת החבית</title>
+      <link>https://open.spotify.com/episode/fixture002</link>
+      <description>הפרק השני בפיד הבדיקה.</description>
+      <pubDate>Mon, 10 Aug 2026 08:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <guid isPermaLink="false">omef-fixture-003</guid>
+      <title>פרק 3: עשן, ים וזמן</title>
+      <link>https://open.spotify.com/episode/fixture003</link>
+      <description>הפרק השלישי בפיד הבדיקה.</description>
+      <pubDate>Mon, 17 Aug 2026 08:00:00 +0000</pubDate>
+    </item>
+  </channel>
+</rss>
