@@ -3,6 +3,7 @@
   "version": 3,
   "settings": {
     "appearanceTools": true,
+    "useRootPaddingAwareAlignments": true,
     "color": {
       "palette": [
         { "color": "#142521", "name": "ירוק עמוק", "slug": "ink" },
@@ -36,6 +37,12 @@
     }
   },
   "styles": {
+    "spacing": {
+      "padding": {
+        "right": "var:preset|spacing|30",
+        "left": "var:preset|spacing|30"
+      }
+    },
     "color": {
       "background": "var:preset|color|paper",
       "text": "var:preset|color|ink"

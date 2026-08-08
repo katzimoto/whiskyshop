@@ -250,12 +250,12 @@
 		var stockQty = p.stockQuantity !== null && p.stockQuantity !== undefined ? ' (' + p.stockQuantity + ')' : '';
 		return (
 			'<tr>' +
-			'<td class="omef-table__thumb">' + ( p.image ? '<img src="' + escapeHtml( p.image ) + '" alt="">' : '' ) + '</td>' +
-			'<td><a href="#/products/' + p.id + '">' + escapeHtml( p.title ) + '</a>' + ( p.onSale ? ' <span class="omef-badge omef-badge--sale">במבצע</span>' : '' ) + ( p.hasSample ? ' <span class="omef-badge">דגימה 30 מ"ל</span>' : '' ) + '</td>' +
-			'<td>' + p.priceHtml + '</td>' +
-			'<td><span class="omef-badge omef-badge--' + ( p.stockStatus === 'instock' ? 'ok' : 'warn' ) + '">' + stock + stockQty + '</span></td>' +
-			'<td>' + escapeHtml( p.categories.join( ', ' ) ) + '</td>' +
-			'<td class="omef-table__actions"><button class="omef-link-button omef-link-button--danger" data-delete-product="' + p.id + '">מחיקה</button></td>' +
+			'<td class="omef-table__thumb" data-label="">' + ( p.image ? '<img src="' + escapeHtml( p.image ) + '" alt="">' : '' ) + '</td>' +
+			'<td data-label="מוצר"><a href="#/products/' + p.id + '">' + escapeHtml( p.title ) + '</a>' + ( p.onSale ? ' <span class="omef-badge omef-badge--sale">במבצע</span>' : '' ) + ( p.hasSample ? ' <span class="omef-badge">דגימה 30 מ"ל</span>' : '' ) + '</td>' +
+			'<td data-label="מחיר">' + p.priceHtml + '</td>' +
+			'<td data-label="מלאי"><span class="omef-badge omef-badge--' + ( p.stockStatus === 'instock' ? 'ok' : 'warn' ) + '">' + stock + stockQty + '</span></td>' +
+			'<td data-label="קטגוריות">' + escapeHtml( p.categories.join( ', ' ) ) + '</td>' +
+			'<td class="omef-table__actions" data-label=""><button class="omef-link-button omef-link-button--danger" data-delete-product="' + p.id + '">מחיקה</button></td>' +
 			'</tr>'
 		);
 	}
@@ -476,11 +476,11 @@
 	function orderRow( o ) {
 		return (
 			'<tr>' +
-			'<td><a href="#/orders/' + o.id + '">#' + escapeHtml( o.orderNumber ) + '</a></td>' +
-			'<td>' + escapeHtml( o.date ) + '</td>' +
-			'<td>' + escapeHtml( o.customerName || o.customerEmail ) + '</td>' +
-			'<td><span class="omef-badge">' + escapeHtml( o.statusLabel ) + '</span></td>' +
-			'<td>' + o.total + '</td>' +
+			'<td data-label="הזמנה"><a href="#/orders/' + o.id + '">#' + escapeHtml( o.orderNumber ) + '</a></td>' +
+			'<td data-label="תאריך">' + escapeHtml( o.date ) + '</td>' +
+			'<td data-label="לקוח">' + escapeHtml( o.customerName || o.customerEmail ) + '</td>' +
+			'<td data-label="סטטוס"><span class="omef-badge">' + escapeHtml( o.statusLabel ) + '</span></td>' +
+			'<td data-label="סכום">' + o.total + '</td>' +
 			'</tr>'
 		);
 	}
@@ -727,7 +727,7 @@
 					'<th>דוא"ל</th><th>נוצרה</th><th>סטטוס</th>' +
 				'</tr></thead><tbody>' +
 				( result.carts.length ? result.carts.map( function ( c ) {
-					return '<tr><td>' + escapeHtml( c.email ) + '</td><td>' + escapeHtml( c.createdAt ) + '</td><td><span class="omef-badge">' + escapeHtml( c.status ) + '</span></td></tr>';
+					return '<tr><td data-label="דוא&quot;ל">' + escapeHtml( c.email ) + '</td><td data-label="נוצרה">' + escapeHtml( c.createdAt ) + '</td><td data-label="סטטוס"><span class="omef-badge">' + escapeHtml( c.status ) + '</span></td></tr>';
 				} ).join( '' ) : '<tr><td colspan="3" class="omef-empty">אין עגלות נטושות.</td></tr>' ) +
 				'</tbody></table></div>';
 
@@ -806,7 +806,7 @@
 				'<p class="omef-note">גיבוי דחוס נוצר אוטומטית מדי יום; 14 הגיבויים האחרונים נשמרים ב-<code>wp-content/uploads/omef-backups</code>.</p>' +
 				'<div class="omef-table-wrap"><table class="omef-table"><thead><tr><th>קובץ</th><th>גודל</th><th></th></tr></thead><tbody>' +
 				( result.backups.length ? result.backups.map( function ( b ) {
-					return '<tr><td><code>' + escapeHtml( b.name ) + '</code></td><td>' + ( b.size / 1024 / 1024 ).toFixed( 1 ) + ' MB</td><td><a href="' + escapeHtml( b.downloadUrl ) + '">הורדה</a></td></tr>';
+					return '<tr><td data-label="קובץ"><code>' + escapeHtml( b.name ) + '</code></td><td data-label="גודל">' + ( b.size / 1024 / 1024 ).toFixed( 1 ) + ' MB</td><td data-label=""><a href="' + escapeHtml( b.downloadUrl ) + '">הורדה</a></td></tr>';
 				} ).join( '' ) : '<tr><td colspan="3" class="omef-empty">אין גיבויים עדיין.</td></tr>' ) +
 				'</tbody></table></div>';
 
@@ -840,7 +840,7 @@
 				'</form>' +
 				'<div class="omef-table-wrap"><table class="omef-table"><thead><tr><th>מקור</th><th>יעד</th><th>מצב</th><th></th></tr></thead><tbody>' +
 				( result.redirects.length ? result.redirects.map( function ( r ) {
-					return '<tr><td><code>/' + escapeHtml( r.source ) + '</code></td><td><code>/' + escapeHtml( r.target ) + '</code></td><td>' + ( r.active ? 'פעילה' : 'מושבתת' ) + '</td><td><button class="omef-link-button omef-link-button--danger" data-delete-redirect="' + r.id + '">מחיקה</button></td></tr>';
+					return '<tr><td data-label="מקור"><code>/' + escapeHtml( r.source ) + '</code></td><td data-label="יעד"><code>/' + escapeHtml( r.target ) + '</code></td><td data-label="מצב">' + ( r.active ? 'פעילה' : 'מושבתת' ) + '</td><td data-label=""><button class="omef-link-button omef-link-button--danger" data-delete-redirect="' + r.id + '">מחיקה</button></td></tr>';
 				} ).join( '' ) : '<tr><td colspan="4" class="omef-empty">אין הפניות.</td></tr>' ) +
 				'</tbody></table></div>';
 

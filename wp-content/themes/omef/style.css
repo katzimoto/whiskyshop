@@ -18,8 +18,19 @@ Text Domain: omef
   --omef-clay: #a9482e;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html {
+  overflow-x: hidden;
   scroll-behavior: smooth;
+}
+
+body {
+  overflow-x: hidden;
 }
 
 body {
@@ -223,6 +234,15 @@ select:focus-visible {
   grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
 }
 
+/* WooCommerce's default stylesheet clears floats with ::before/::after
+   generated content; under display:grid those become phantom grid items
+   that push every real product into the wrong cell. */
+.woocommerce ul.products::before,
+.woocommerce ul.products::after {
+  content: none;
+  display: none;
+}
+
 .woocommerce ul.products li.product {
   margin: 0 !important;
   width: auto !important;
@@ -319,6 +339,11 @@ select:focus-visible {
 .omef-checkout-page #order_review {
   background: var(--omef-paper-deep);
   padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.omef-cart-page .cart-collaterals .cart_totals {
+  float: none !important;
+  width: 100% !important;
 }
 
 .omef-checkout-page form.checkout .form-row input.input-text,
