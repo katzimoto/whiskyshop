@@ -56,8 +56,12 @@ jobs:
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/wp-content/themes/omef/"
 
       - name: Post-deploy command (optional)
-        if: ${{ secrets.DEPLOY_REMOTE_CMD != '' }}
+        env:
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          REMOTE_CMD: ${{ secrets.DEPLOY_REMOTE_CMD }}
         run: |
-          ssh -p '${{ secrets.SSH_PORT || '22' }}' \
-            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
-            "${{ secrets.DEPLOY_REMOTE_CMD }}"
+          if [ -n "$REMOTE_CMD" ]; then
+            ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "$REMOTE_CMD"
+          fi
