@@ -135,6 +135,12 @@ function omef_dashboard_stats(): void {
 		);
 	}
 
+	$leads_count = 0;
+	if ( function_exists( 'omef_leads_table' ) ) {
+		global $wpdb;
+		$leads_count = (int) $wpdb->get_var( 'SELECT COUNT(*) FROM ' . omef_leads_table() );
+	}
+
 	$discount_count = count(
 		get_posts(
 			array(
@@ -163,6 +169,7 @@ function omef_dashboard_stats(): void {
 			'lastBackupSize'   => $last_backup ? ( $backups[ $last_backup ] ?? 0 ) : 0,
 			'abandonedPending' => $abandoned_pending,
 			'discountCount'    => $discount_count,
+			'leadsCount'       => $leads_count,
 		)
 	);
 }

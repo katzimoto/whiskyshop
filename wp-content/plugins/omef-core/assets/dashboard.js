@@ -10,6 +10,7 @@
 		{ route: 'orders', label: 'הזמנות' },
 		{ route: 'shipping', label: 'משלוחים' },
 		{ route: 'abandoned', label: 'עגלות נטושות' },
+		{ route: 'leads', label: 'פניות' },
 		{ route: 'emails', label: 'דוא"ל הזמנות' },
 		{ route: 'backups', label: 'גיבויים' },
 		{ route: 'redirects', label: 'הפניות 301' },
@@ -128,6 +129,7 @@
 		orders: viewOrders,
 		shipping: viewShipping,
 		abandoned: viewAbandoned,
+		leads: viewLeads,
 		emails: viewEmails,
 		backups: viewBackups,
 		redirects: viewRedirects,
@@ -162,6 +164,7 @@
 					statCard( 'בטיפול', stats.processingCount ) +
 					statCard( 'אזל מהמלאי', stats.outOfStockCount ) +
 					statCard( 'עגלות נטושות ממתינות', stats.abandonedPending ) +
+					statCard( 'פניות שהתקבלו', stats.leadsCount ) +
 					statCard( 'מוצרים במבצע', stats.discountCount ) +
 					statCard( 'גיבוי אחרון', stats.lastBackup ? stats.lastBackup : 'אין עדיין' ) +
 				'</div>' +
@@ -171,6 +174,7 @@
 					quickLink( 'orders', 'הזמנות', 'מעקב וטיפול בהזמנות' ) +
 					quickLink( 'shipping', 'משלוחים', 'אזורי משלוח ושיטות' ) +
 					quickLink( 'abandoned', 'עגלות נטושות', 'שליחת תזכורות' ) +
+					quickLink( 'leads', 'פניות', 'פניות מטופס יצירת הקשר' ) +
 					quickLink( 'emails', 'דוא"ל הזמנות', 'התאמת הודעות ללקוחות' ) +
 					quickLink( 'backups', 'גיבויים', 'גיבוי והורדה של בסיס הנתונים' ) +
 					quickLink( 'redirects', 'הפניות 301', 'ניהול הפניות מנתיבים ישנים' ) +
@@ -743,6 +747,30 @@
 						e.target.disabled = false;
 					} );
 			} );
+		} ).catch( function ( err ) {
+			root.innerHTML = errorBlock( err );
+		} );
+	}
+
+	/* ---------- leads ---------- */
+
+	function viewLeads( root ) {
+		api( 'omef_leads_list' ).then( function ( result ) {
+			root.innerHTML =
+				'<h1 class="omef-view__title">פניות</h1>' +
+				'<p class="omef-note">פניות שהתקבלו דרך טופס יצירת הקשר באתר.</p>' +
+				'<div class="omef-table-wrap"><table class="omef-table"><thead><tr>' +
+					'<th>שם</th><th>טלפון</th><th>מעוניין/ת ב</th><th>התקבלה</th>' +
+				'</tr></thead><tbody>' +
+				( result.leads.length ? result.leads.map( function ( l ) {
+					return '<tr>' +
+						'<td data-label="שם">' + escapeHtml( l.name ) + '</td>' +
+						'<td data-label="טלפון">' + escapeHtml( l.phone ) + '</td>' +
+						'<td data-label="מעוניין/ת ב">' + escapeHtml( l.interest ) + '</td>' +
+						'<td data-label="התקבלה">' + escapeHtml( l.createdAt ) + '</td>' +
+					'</tr>';
+				} ).join( '' ) : '<tr><td colspan="4" class="omef-empty">אין עדיין פניות.</td></tr>' ) +
+				'</tbody></table></div>';
 		} ).catch( function ( err ) {
 			root.innerHTML = errorBlock( err );
 		} );
