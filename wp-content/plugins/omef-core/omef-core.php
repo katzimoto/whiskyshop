@@ -18,6 +18,7 @@ $omef_includes = array(
 	'discounts.php',
 	'checkout.php',
 	'redirects.php',
+	'user-access.php',
 	'podcast.php',
 	'shop-manager.php',
 	'age-gate.php',
