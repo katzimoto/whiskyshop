@@ -16,6 +16,8 @@ $omef_includes = array(
 	'product-meta.php',
 	'frontend.php',
 	'discounts.php',
+	'checkout.php',
+	'redirects.php',
 	'podcast.php',
 	'shop-manager.php',
 	'age-gate.php',
@@ -30,6 +32,7 @@ foreach ( $omef_includes as $omef_include ) {
 function omef_activate(): void {
 	omef_register_content_types();
 	omef_abandoned_create_table();
+	omef_redirect_create_table();
 	if ( ! wp_next_scheduled( 'omef_abandoned_reminder_cron' ) ) {
 		wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'omef_abandoned_reminder_cron' );
 	}
