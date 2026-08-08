@@ -9,3 +9,5 @@ RUN apt-get update \
     && chmod +x /usr/local/bin/wp
 
 COPY php-mail.ini /usr/local/etc/php/conf.d/php-mail.ini
+COPY msmtp-send.sh /usr/local/bin/msmtp-send
+RUN chmod +x /usr/local/bin/msmtp-send
