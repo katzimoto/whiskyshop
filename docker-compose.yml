@@ -27,6 +27,8 @@ services:
         define('WP_DEBUG_DISPLAY', false);
         define('WP_ENVIRONMENT_TYPE', 'local');
         define('DISALLOW_FILE_EDIT', true);
+        define('WP_REDIS_HOST', 'redis');
+        define('WP_REDIS_PORT', 6379);
     volumes:
       - wordpress:/var/www/html
       - ./wp-content/themes/omef:/var/www/html/wp-content/themes/omef
@@ -35,6 +37,14 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      redis:
+        condition: service_started
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis:/data
     restart: unless-stopped
 
   database:
@@ -61,4 +71,5 @@ services:
 
 volumes:
   database:
+  redis:
   wordpress:
