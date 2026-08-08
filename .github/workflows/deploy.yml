@@ -79,7 +79,8 @@ jobs:
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
           DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
-        run: ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "cd '$DEPLOY_PATH' && bash -s" <<'REMOTE'
+        run: |
+          ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "cd '$DEPLOY_PATH' && bash -s" <<'REMOTE'
           set -e
           WP() { docker compose exec -T wordpress wp --allow-root "$@"; }
 
@@ -92,19 +93,17 @@ jobs:
           fi
 
           echo "== remove default junk content =="
-          WP post list --post_type=any --name=hello-world --field=ID --format=csv \
-            | tail -n +2 | tr -d '\r' | { while read -r id; do
-                [ -n "$id" ] && WP post delete "$id" --force || true
-              done; }
-          WP post list --post_type=post,page --name=sample-page --field=ID --format=csv \
-            | tail -n +2 | tr -d '\r' | { while read -r id; do
-                [ -n "$id" ] && WP post delete "$id" --force || true
-              done; }
+          while read -r id; do
+            [ -n "$id" ] && WP post delete "$id" --force || true
+          done < <(WP post list --post_type=any --name=hello-world --field=ID --format=csv)
+          while read -r id; do
+            [ -n "$id" ] && WP post delete "$id" --force || true
+          done < <(WP post list --post_type=post,page --name=sample-page --field=ID --format=csv)
 
           echo "== refresh =="
           WP rewrite flush
           WP cache flush
-REMOTE
+          REMOTE
           if [ -n "$REMOTE_CMD" ]; then
             ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "$REMOTE_CMD"
           fi
