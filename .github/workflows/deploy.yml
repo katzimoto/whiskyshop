@@ -72,6 +72,39 @@ jobs:
           REMOTE_CMD: ${{ secrets.DEPLOY_REMOTE_CMD }}
         run: |
           ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "cd '$DEPLOY_PATH' && docker compose up -d --no-deps && docker compose restart wordpress nginx"
+
+      - name: Provision store (WooCommerce + content cleanup)
+        env:
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "cd '$DEPLOY_PATH' && bash -s" <<'REMOTE'
+          set -e
+          WP() { docker compose exec -T wordpress wp --allow-root "$@"; }
+
+          echo "== WooCommerce =="
+          if ! WP plugin is-active woocommerce; then
+            WP plugin install woocommerce --force --activate --version=11.0.0
+          else
+            WP plugin is-installed woocommerce || WP plugin install woocommerce --version=11.0.0
+            WP plugin activate woocommerce
+          fi
+
+          echo "== remove default junk content =="
+          WP post list --post_type=any --name=hello-world --field=ID --format=csv \
+            | tail -n +2 | tr -d '\r' | { while read -r id; do
+                [ -n "$id" ] && WP post delete "$id" --force || true
+              done; }
+          WP post list --post_type=post,page --name=sample-page --field=ID --format=csv \
+            | tail -n +2 | tr -d '\r' | { while read -r id; do
+                [ -n "$id" ] && WP post delete "$id" --force || true
+              done; }
+
+          echo "== refresh =="
+          WP rewrite flush
+          WP cache flush
+REMOTE
           if [ -n "$REMOTE_CMD" ]; then
             ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "$REMOTE_CMD"
           fi
