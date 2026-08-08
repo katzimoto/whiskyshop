@@ -19,6 +19,7 @@ $omef_includes = array(
 	'checkout.php',
 	'redirects.php',
 	'user-access.php',
+	'backup.php',
 	'podcast.php',
 	'shop-manager.php',
 	'age-gate.php',
@@ -37,12 +38,16 @@ function omef_activate(): void {
 	if ( ! wp_next_scheduled( 'omef_abandoned_reminder_cron' ) ) {
 		wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'omef_abandoned_reminder_cron' );
 	}
+	if ( ! wp_next_scheduled( 'omef_daily_backup_cron' ) ) {
+		wp_schedule_event( time() + 6 * HOUR_IN_SECONDS, 'daily', 'omef_daily_backup_cron' );
+	}
 	flush_rewrite_rules();
 }
 register_activation_hook( __FILE__, 'omef_activate' );
 
 function omef_deactivate(): void {
 	wp_clear_scheduled_hook( 'omef_abandoned_reminder_cron' );
+	wp_clear_scheduled_hook( 'omef_daily_backup_cron' );
 	flush_rewrite_rules();
 }
 register_deactivation_hook( __FILE__, 'omef_deactivate' );
