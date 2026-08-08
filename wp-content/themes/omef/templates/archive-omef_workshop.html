@@ -12,12 +12,16 @@
 	<!-- /wp:group -->
 	<!-- wp:query {"queryId":1,"query":{"perPage":12,"pages":0,"offset":0,"postType":"omef_workshop","order":"desc","orderBy":"date","inherit":true},"align":"wide","layout":{"type":"default"}} -->
 	<div class="wp-block-query alignwide">
-		<!-- wp:post-template {"layout":{"type":"grid","columnCount":2}} -->
-			<!-- wp:group {"className":"omef-episode-card","style":{"spacing":{"blockGap":"0.75rem"}},"layout":{"type":"constrained"}} -->
-			<div class="wp-block-group omef-episode-card">
-				<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"16/9"} /-->
-				<!-- wp:post-title {"isLink":true,"fontSize":"x-large"} /-->
-				<!-- wp:post-excerpt {"moreText":"לסדנה"} /-->
+		<!-- wp:post-template {"className":"omef-workshop-gallery","layout":{"type":"grid","columnCount":3}} -->
+			<!-- wp:group {"className":"omef-gallery-card","layout":{"type":"constrained"}} -->
+			<div class="wp-block-group omef-gallery-card">
+				<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"1","className":"omef-gallery-card__image"} /-->
+				<!-- wp:group {"className":"omef-gallery-card__caption","layout":{"type":"flex","flexWrap":"wrap","justifyContent":"space-between"}} -->
+				<div class="wp-block-group omef-gallery-card__caption">
+					<!-- wp:post-title {"isLink":true,"fontSize":"medium"} /-->
+					<!-- wp:post-date {"fontSize":"small"} /-->
+				</div>
+				<!-- /wp:group -->
 			</div>
 			<!-- /wp:group -->
 		<!-- /wp:post-template -->

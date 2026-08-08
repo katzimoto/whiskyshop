@@ -262,6 +262,45 @@ select:focus-visible {
   font-weight: 700;
 }
 
+.omef-workshop-gallery {
+  gap: 0.6rem !important;
+}
+
+.omef-gallery-card {
+  overflow: hidden;
+}
+
+.omef-gallery-card__image {
+  display: block;
+  overflow: hidden;
+}
+
+.omef-gallery-card__image img {
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+  width: 100%;
+}
+
+.omef-gallery-card:hover .omef-gallery-card__image img {
+  transform: scale(1.05);
+}
+
+.omef-gallery-card__caption {
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+  margin-top: 0.6rem;
+}
+
+.omef-gallery-card__caption .wp-block-post-title {
+  font-weight: 700;
+  margin: 0;
+}
+
+.omef-gallery-card__caption .wp-block-post-date {
+  color: color-mix(in srgb, var(--omef-ink) 60%, var(--omef-paper));
+}
+
 .omef-cart-page table.shop_table,
 .omef-checkout-page table.shop_table {
   border-collapse: collapse;
@@ -502,5 +541,9 @@ select:focus-visible {
 
   .woocommerce ul.products {
     grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  }
+
+  .omef-workshop-gallery {
+    grid-template-columns: repeat(2, 1fr) !important;
   }
 }

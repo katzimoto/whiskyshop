@@ -97,7 +97,11 @@ function omef_shipping_zone_save(): void {
 		wp_send_json_error( array( 'message' => 'יש להזין שם לאזור המשלוח.' ) );
 	}
 
-	$zone = new WC_Shipping_Zone( $id );
+	// Zone id 0 is WooCommerce's reserved "rest of the world" zone, not "no
+	// id yet" — WC_Shipping_Zone::save() decides create-vs-update based on
+	// `null !== get_id()`, so a genuinely new zone must be constructed with
+	// no id at all (leaving it null) rather than with 0.
+	$zone = $id ? new WC_Shipping_Zone( $id ) : new WC_Shipping_Zone();
 	$zone->set_zone_name( $name );
 	$zone->save();
 

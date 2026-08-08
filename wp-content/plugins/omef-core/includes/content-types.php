@@ -6,21 +6,43 @@
 defined( 'ABSPATH' ) || exit;
 
 function omef_register_content_types(): void {
+	$episode_template = array(
+		array( 'core/paragraph', array( 'placeholder' => 'תקציר קצר: על מה מדברים בפרק הזה?' ) ),
+		array( 'core/heading', array( 'level' => 2, 'content' => 'נושאים עיקריים' ) ),
+		array( 'core/paragraph', array( 'placeholder' => 'הבקבוקים והנושאים שעלו בפרק...' ) ),
+	);
+
+	$workshop_template = array(
+		array( 'core/paragraph', array( 'placeholder' => 'תיאור קצר של הסדנה ולמי היא מתאימה...' ) ),
+		array( 'core/heading', array( 'level' => 2, 'content' => 'מה כלול' ) ),
+		array(
+			'core/list',
+			array(),
+			array(
+				array( 'core/list-item', array( 'content' => 'טעימה מודרכת של כמה בקבוקים' ) ),
+				array( 'core/list-item', array( 'content' => 'חטיפים מתאימים' ) ),
+			),
+		),
+	);
+
 	$types = array(
 		'omef_episode' => array(
 			'singular' => 'פרק',
 			'plural'   => 'פרקים',
 			'slug'     => 'podcast',
+			'template' => $episode_template,
 		),
 		'omef_workshop' => array(
 			'singular' => 'סדנה',
 			'plural'   => 'סדנאות',
 			'slug'     => 'workshops',
+			'template' => $workshop_template,
 		),
 		'omef_tasting' => array(
 			'singular' => 'טעימה פתוחה',
 			'plural'   => 'טעימות פתוחות',
 			'slug'     => 'tastings',
+			'template' => array(),
 		),
 	);
 
@@ -47,6 +69,7 @@ function omef_register_content_types(): void {
 				'rewrite'      => array( 'slug' => $details['slug'] ),
 				'supports'     => array( 'title', 'editor', 'excerpt', 'thumbnail' ),
 				'menu_icon'    => 'dashicons-format-audio',
+				'template'     => $details['template'],
 			)
 		);
 	}
@@ -68,15 +91,20 @@ function omef_fields(): array {
 			'_omef_sale_note'     => array( 'label' => 'סיבת המבצע (למשל: משחרור לקראת סגירת חבית)', 'type' => 'text' ),
 		),
 		'omef_episode' => array(
-			'_omef_episode_number'  => array( 'label' => 'מספר פרק', 'type' => 'integer' ),
-			'_omef_spotify_id'      => array( 'label' => 'Spotify ID', 'type' => 'text' ),
-			'_omef_episode_summary' => array( 'label' => 'תקציר קצר', 'type' => 'textarea' ),
+			'_omef_episode_number'  => array( 'label' => 'מספר פרק', 'type' => 'integer', 'placeholder' => '12' ),
+			'_omef_spotify_id'      => array( 'label' => 'Spotify ID', 'type' => 'text', 'placeholder' => 'מתמלא אוטומטית בייבוא מהפיד' ),
+			'_omef_episode_summary' => array( 'label' => 'תקציר קצר', 'type' => 'textarea', 'placeholder' => 'שני-שלושה משפטים על מה מדברים בפרק הזה...' ),
 		),
 		'omef_workshop' => array(
-			'_omef_duration'    => array( 'label' => 'משך הסדנה', 'type' => 'text' ),
-			'_omef_group_size'  => array( 'label' => 'מספר משתתפים', 'type' => 'text' ),
-			'_omef_price_range' => array( 'label' => 'טווח מחירים', 'type' => 'text' ),
-			'_omef_inclusions'  => array( 'label' => 'מה כלול', 'type' => 'textarea' ),
+			'_omef_workshop_date'            => array( 'label' => 'תאריך ושעה', 'type' => 'datetime' ),
+			'_omef_workshop_venue'           => array( 'label' => 'מיקום', 'type' => 'text', 'placeholder' => 'למשל: הסטודיו, רוטשילד 10, תל אביב' ),
+			'_omef_duration'                 => array( 'label' => 'משך הסדנה', 'type' => 'text', 'placeholder' => 'כשעתיים וחצי' ),
+			'_omef_group_size'               => array( 'label' => 'מספר משתתפים', 'type' => 'text', 'placeholder' => '8–14 איש' ),
+			'_omef_inclusions'               => array( 'label' => 'מה כלול', 'type' => 'textarea', 'placeholder' => 'טעימה מודרכת של 5 בקבוקים, חטיפים, דף טעימה לבית...' ),
+			'_omef_workshop_price'           => array( 'label' => 'מחיר לכרטיס (₪) — ליצירת מוצר לרכישה', 'type' => 'decimal', 'placeholder' => '220' ),
+			'_omef_workshop_seats'           => array( 'label' => 'מספר מקומות', 'type' => 'integer', 'placeholder' => '12' ),
+			'_omef_price_range'              => array( 'label' => 'טווח מחירים לתצוגה (טקסט חופשי, אופציונלי)', 'type' => 'text', 'placeholder' => 'למשל: 180–250 ₪ לאדם' ),
+			'_omef_workshop_tickets_disabled' => array( 'label' => 'השבתת מכירת כרטיסים (למשל: אזל, סדנה סגורה)', 'type' => 'boolean' ),
 		),
 		'omef_tasting' => array(
 			'_omef_tasting_date'   => array( 'label' => 'תאריך ושעה', 'type' => 'datetime' ),
@@ -124,6 +152,17 @@ function omef_register_meta(): void {
 	register_post_meta(
 		'omef_tasting',
 		'_omef_tasting_product_id',
+		array(
+			'single'            => true,
+			'type'              => 'integer',
+			'show_in_rest'      => true,
+			'sanitize_callback' => 'absint',
+		)
+	);
+
+	register_post_meta(
+		'omef_workshop',
+		'_omef_workshop_product_id',
 		array(
 			'single'            => true,
 			'type'              => 'integer',

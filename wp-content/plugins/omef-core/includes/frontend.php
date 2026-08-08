@@ -183,20 +183,38 @@ function omef_prepend_workshop_details( string $content ): string {
 		return $content;
 	}
 
-	$post_id     = get_the_ID();
-	$duration    = get_post_meta( $post_id, '_omef_duration', true );
-	$group_size  = get_post_meta( $post_id, '_omef_group_size', true );
-	$price_range = get_post_meta( $post_id, '_omef_price_range', true );
-	$inclusions  = get_post_meta( $post_id, '_omef_inclusions', true );
+	$post_id          = get_the_ID();
+	$date             = get_post_meta( $post_id, '_omef_workshop_date', true );
+	$venue            = get_post_meta( $post_id, '_omef_workshop_venue', true );
+	$duration         = get_post_meta( $post_id, '_omef_duration', true );
+	$group_size       = get_post_meta( $post_id, '_omef_group_size', true );
+	$price_range      = get_post_meta( $post_id, '_omef_price_range', true );
+	$inclusions       = get_post_meta( $post_id, '_omef_inclusions', true );
+	$product_id       = absint( get_post_meta( $post_id, '_omef_workshop_product_id', true ) );
+	$tickets_disabled = (bool) get_post_meta( $post_id, '_omef_workshop_tickets_disabled', true );
 
 	$details = array();
+	if ( $date ) {
+		$details[] = '<span><strong>תאריך ושעה:</strong> ' . esc_html( $date ) . '</span>';
+	}
+	if ( $venue ) {
+		$details[] = '<span><strong>מיקום:</strong> ' . esc_html( $venue ) . '</span>';
+	}
 	if ( $duration ) {
 		$details[] = '<span><strong>משך:</strong> ' . esc_html( $duration ) . '</span>';
 	}
 	if ( $group_size ) {
 		$details[] = '<span><strong>מספר משתתפים:</strong> ' . esc_html( $group_size ) . '</span>';
 	}
-	if ( $price_range ) {
+
+	$product = ( $product_id && function_exists( 'wc_get_product' ) ) ? wc_get_product( $product_id ) : null;
+	if ( $product ) {
+		$details[] = '<span><strong>מחיר:</strong> ' . wp_kses_post( $product->get_price_html() ) . '</span>';
+		$stock = $product->get_stock_quantity();
+		if ( $stock !== null ) {
+			$details[] = '<span><strong>מקומות:</strong> ' . esc_html( (string) $stock ) . '</span>';
+		}
+	} elseif ( $price_range ) {
 		$details[] = '<span><strong>טווח מחירים:</strong> ' . esc_html( $price_range ) . '</span>';
 	}
 
@@ -211,6 +229,11 @@ function omef_prepend_workshop_details( string $content ): string {
 	$html .= '</dl>';
 	if ( $inclusions ) {
 		$html .= '<p class="omef-product-notes">' . nl2br( esc_html( $inclusions ) ) . '</p>';
+	}
+	if ( $product && ! $tickets_disabled && $product->is_purchasable() && $product->is_in_stock() ) {
+		$html .= '<p><a class="wp-block-button__link wp-element-button wp-element-button" href="' . esc_url( get_permalink( $product_id ) ) . '">רכישת כרטיס</a></p>';
+	} elseif ( $product && $tickets_disabled ) {
+		$html .= '<p>מכירת הכרטיסים לסדנה זו סגורה כרגע.</p>';
 	}
 	$html .= '</section>';
 
