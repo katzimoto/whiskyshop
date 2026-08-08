@@ -19,10 +19,9 @@ $omef_includes = array(
 	'checkout.php',
 	'redirects.php',
 	'user-access.php',
-	'wholesale.php',
 	'backup.php',
 	'podcast.php',
-	'shop-manager.php',
+	'email-settings.php',
 	'age-gate.php',
 	'publish-guardrails.php',
 	'abandoned-cart.php',
@@ -36,7 +35,6 @@ function omef_activate(): void {
 	omef_register_content_types();
 	omef_abandoned_create_table();
 	omef_redirect_create_table();
-	omef_wholesale_ensure_role();
 	if ( ! wp_next_scheduled( 'omef_abandoned_reminder_cron' ) ) {
 		wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'omef_abandoned_reminder_cron' );
 	}

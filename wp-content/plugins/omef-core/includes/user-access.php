@@ -21,7 +21,7 @@ function omef_is_content_editor( int $user_id ): bool {
 		return false;
 	}
 
-	return (bool) array_intersect( array( 'administrator', 'editor', 'shop_manager' ), (array) $user->roles );
+	return (bool) array_intersect( array( 'administrator', 'editor' ), (array) $user->roles );
 }
 
 function omef_limit_non_editors_cap( array $caps, string $cap, int $user_id ): array {

@@ -6,7 +6,6 @@ Local development environment for the The Omef WordPress and WooCommerce rebuild
 
 - nginx and PHP-FPM WordPress (with wp-cli built in)
 - MariaDB
-- Redis object cache
 - Mailpit for local email inspection
 - Custom theme and site plugin mounted from `wp-content/`
 
@@ -19,9 +18,6 @@ WooCommerce remains the source of truth for products, stock, orders, payments an
 3. Run `docker-compose up --build`.
 4. Open `http://localhost:8080` and complete the WordPress installer.
 5. Activate the `Omef` theme and the `Omef Core` plugin after they are added.
-6. First boot only, enable the object cache backed by Redis:
-   `docker-compose exec wordpress wp plugin install redis-cache --activate`
-   `docker-compose exec wordpress wp redis enable`
 
 Mail sent locally is visible at `http://localhost:8025`.
 
@@ -36,11 +32,12 @@ wp-content/uploads/     Local media uploads and backups, excluded from Git
 
 ## What omef-core does
 
-- Two content types (podcast episodes, workshops, tastings) with product/metadata editorial fields
+- All three content types (podcast episodes, workshops, tastings) with editorial scheduling and product metadata
 - 30 ml sample pricing on any product, turned into a WooCommerce variable product
 - Editorial discounts (sale price with a reason) shown as strikethrough pricing
-- Age gate (18+), alcohol notice, and a read-only shop-manager dashboard
+- Age gate (18+), alcohol notice, and a locked-down admin for store owners
 - Tightened product publishing: image, ALT text, price and stock are required
+- Order emails: admins get a notification for every purchase (configurable address) and customers get a detailed editable receipt template
 - One-tap checkout: guest sales, COD or bank transfer, and a preselect payment
 - Abandoned-cart capture with a single 24h reminder email
 - Self-service accounts: customers register and buy, only admins/managers can edit
