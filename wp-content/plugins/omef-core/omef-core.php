@@ -26,6 +26,10 @@ $omef_includes = array(
 	'publish-guardrails.php',
 	'abandoned-cart.php',
 	'mail.php',
+	'dashboard.php',
+	'dashboard-products.php',
+	'dashboard-orders.php',
+	'dashboard-shipping.php',
 );
 foreach ( $omef_includes as $omef_include ) {
 	require_once __DIR__ . '/includes/' . $omef_include;

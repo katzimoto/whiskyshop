@@ -6,6 +6,9 @@ services:
     volumes:
       - wordpress:/var/www/html:ro
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./wp-content/themes/omef:/var/www/html/wp-content/themes/omef:ro
+      - ./wp-content/plugins/omef-core:/var/www/html/wp-content/plugins/omef-core:ro
+      - ./wp-content/uploads:/var/www/html/wp-content/uploads:ro
     depends_on:
       wordpress:
         condition: service_started

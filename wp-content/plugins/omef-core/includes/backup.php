@@ -92,71 +92,33 @@ function omef_daily_backup(): void {
 }
 add_action( 'omef_daily_backup_cron', 'omef_daily_backup' );
 
-function omef_backup_admin_menu(): void {
-	add_submenu_page(
-		'tools.php',
-		'גיבויים',
-		'גיבויים',
-		'manage_options',
-		'omef-backups',
-		'omef_render_backups'
-	);
+function omef_backups_list_ajax(): void {
+	omef_dashboard_guard( 'manage_options' );
+
+	$backups = array();
+	foreach ( omef_backup_list() as $name => $size ) {
+		$backups[] = array(
+			'name'        => $name,
+			'size'        => (int) $size,
+			'downloadUrl' => wp_nonce_url( admin_url( 'admin-post.php?action=omef_backup_download&file=' . rawurlencode( $name ) ), 'omef_backup_download' ),
+		);
+	}
+
+	wp_send_json_success( array( 'backups' => $backups ) );
 }
-add_action( 'admin_menu', 'omef_backup_admin_menu' );
+add_action( 'wp_ajax_omef_backups_list', 'omef_backups_list_ajax' );
 
-function omef_render_backups(): void {
-	if ( ! current_user_can( 'manage_options' ) ) {
-		return;
-	}
-
-	$notice = get_transient( 'omef_backup_notice_' . get_current_user_id() );
-	if ( $notice ) {
-		delete_transient( 'omef_backup_notice_' . get_current_user_id() );
-	}
-
-	$backups = omef_backup_list();
-	?>
-	<div class="wrap">
-		<h1>גיבויי בסיס נתונים</h1>
-		<?php if ( $notice ) : ?>
-			<div class="notice notice-success is-dismissible"><p><?php echo esc_html( $notice ); ?></p></div>
-		<?php endif; ?>
-		<p>גיבוי דחוס של בסיס הנתונים נוצר אוטומטית מדי יום; 14 הגיבויים האחרונים נשמרים. הורידו את הגיבוי האחרון לאחסון חיצוני באופן קבוע.</p>
-		<p><a class="button button-primary" href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=omef_backup_run' ), 'omef_backup_run' ) ); ?>">גיבוי עכשיו</a></p>
-		<table class="widefat striped">
-			<thead><tr><th>קובץ</th><th>גודל</th><th></th></tr></thead>
-			<tbody>
-			<?php if ( ! $backups ) : ?>
-				<tr><td colspan="3">אין גיבויים עדיין.</td></tr>
-			<?php endif; ?>
-			<?php foreach ( $backups as $name => $size ) : ?>
-				<tr>
-					<td><code><?php echo esc_html( $name ); ?></code></td>
-					<td><?php echo esc_html( number_format_i18n( (int) $size ) ) . ' ב'; ?></td>
-					<td><a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=omef_backup_download&file=' . rawurlencode( $name ) ), 'omef_backup_download' ) ); ?>">הורדה</a></td>
-				</tr>
-			<?php endforeach; ?>
-			</tbody>
-		</table>
-		<p class="description">מיקום: <code>wp-content/uploads/omef-backups</code></p>
-	</div>
-	<?php
-}
-
-function omef_backup_run_action(): void {
-	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_die( 'אין הרשאה.' );
-	}
-	check_admin_referer( 'omef_backup_run' );
+function omef_backups_run_ajax(): void {
+	omef_dashboard_guard( 'manage_options' );
 
 	$result = omef_backup_now();
-	$message = is_wp_error( $result ) ? $result->get_error_message() : 'הגיבוי נוצר: ' . basename( $result );
-	set_transient( 'omef_backup_notice_' . get_current_user_id(), $message, MINUTE_IN_SECONDS );
+	if ( is_wp_error( $result ) ) {
+		wp_send_json_error( array( 'message' => $result->get_error_message() ) );
+	}
 
-	wp_safe_redirect( admin_url( 'tools.php?page=omef-backups' ) );
-	exit;
+	wp_send_json_success( array( 'message' => 'הגיבוי נוצר: ' . basename( $result ) ) );
 }
-add_action( 'admin_post_omef_backup_run', 'omef_backup_run_action' );
+add_action( 'wp_ajax_omef_backups_run', 'omef_backups_run_ajax' );
 
 function omef_backup_download_action(): void {
 	if ( ! current_user_can( 'manage_options' ) ) {

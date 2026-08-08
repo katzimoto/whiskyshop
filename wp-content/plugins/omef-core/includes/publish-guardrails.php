@@ -40,7 +40,6 @@ function omef_validate_product_publish( array $data, array $postarr ): array {
 	if ( $errors ) {
 		update_option( 'omef_publish_error_' . get_current_user_id(), implode( ', ', $errors ), false );
 		$data['post_status'] = 'draft';
-		$data['edit_date'] = current_time( 'mysql' );
 	}
 
 	return $data;

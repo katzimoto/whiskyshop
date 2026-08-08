@@ -1,14 +1,20 @@
 <!-- wp:group {"tagName":"header","className":"omef-site-header","layout":{"type":"constrained"}} -->
 <header class="wp-block-group omef-site-header">
-	<!-- wp:group {"align":"wide","style":{"spacing":{"padding":{"top":"1.1rem","bottom":"1.1rem"}}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"space-between"}} -->
-	<div class="wp-block-group alignwide" style="padding-top:1.1rem;padding-bottom:1.1rem">
+	<!-- wp:group {"align":"wide","className":"omef-header-row","style":{"spacing":{"padding":{"top":"1.1rem","bottom":"1.1rem"}}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"space-between"}} -->
+	<div class="wp-block-group alignwide omef-header-row" style="padding-top:1.1rem;padding-bottom:1.1rem">
 		<!-- wp:site-title {"level":0} /-->
-		<!-- wp:navigation {"overlayMenu":"mobile","layout":{"type":"flex","justifyContent":"right"}} -->
-			<!-- wp:navigation-link {"label":"החנות","url":"/shop","kind":"custom"} /-->
-			<!-- wp:navigation-link {"label":"הפודקאסט","url":"/podcast","kind":"custom"} /-->
-			<!-- wp:navigation-link {"label":"סדנאות","url":"/workshops","kind":"custom"} /-->
-			<!-- wp:navigation-link {"label":"טעימות","url":"/tastings","kind":"custom"} /-->
-		<!-- /wp:navigation -->
+		<!-- wp:group {"className":"omef-header-actions","layout":{"type":"flex","flexWrap":"nowrap"}} -->
+		<div class="wp-block-group omef-header-actions">
+			<!-- wp:navigation {"overlayMenu":"mobile","layout":{"type":"flex","justifyContent":"right"}} -->
+				<!-- wp:navigation-link {"label":"החנות","url":"/shop","kind":"custom"} /-->
+				<!-- wp:navigation-link {"label":"הפודקאסט","url":"/podcast","kind":"custom"} /-->
+				<!-- wp:navigation-link {"label":"סדנאות","url":"/workshops","kind":"custom"} /-->
+				<!-- wp:navigation-link {"label":"טעימות","url":"/tastings","kind":"custom"} /-->
+			<!-- /wp:navigation -->
+			<!-- wp:woocommerce/customer-account {"className":"omef-header-account","displayStyle":"icon_only","iconStyle":"outline"} /-->
+			<!-- wp:woocommerce/mini-cart {"className":"omef-header-cart"} /-->
+		</div>
+		<!-- /wp:group -->
 	</div>
 	<!-- /wp:group -->
 </header>

@@ -59,6 +59,35 @@ select:focus-visible {
   color: var(--omef-paper);
 }
 
+.omef-header-row {
+  gap: 1rem;
+}
+
+.omef-header-actions {
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.omef-header-account .wc-block-customer-account__link,
+.omef-header-cart .wc-block-mini-cart__button {
+  color: var(--omef-paper);
+}
+
+.omef-header-account svg,
+.omef-header-cart svg {
+  fill: var(--omef-paper);
+}
+
+.omef-header-cart .wc-block-mini-cart__button:hover,
+.omef-header-account .wc-block-customer-account__link:hover {
+  opacity: 0.8;
+}
+
+.omef-header-cart .wc-block-mini-cart__badge {
+  background: var(--omef-brass);
+  color: var(--omef-ink);
+}
+
 .omef-hero {
   background:
     linear-gradient(115deg, rgba(20, 37, 33, 0.98), rgba(20, 37, 33, 0.82)),
@@ -109,6 +138,55 @@ select:focus-visible {
   font-size: 1.2rem;
 }
 
+.omef-footer-columns {
+  gap: 3rem;
+}
+
+.omef-footer-about {
+  max-width: 22rem;
+}
+
+.omef-footer-about .omef-alcohol-notice {
+  background: color-mix(in srgb, var(--omef-paper) 8%, transparent);
+  border-right-color: var(--omef-brass);
+  color: var(--omef-paper);
+  margin-top: 1.25rem;
+}
+
+.omef-footer-links h2 {
+  color: var(--omef-brass);
+  letter-spacing: 0.06em;
+  margin-bottom: 0.9rem;
+  text-transform: uppercase;
+}
+
+.omef-footer-links ul {
+  display: grid;
+  gap: 0.55rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.omef-footer-links a {
+  opacity: 0.9;
+}
+
+.omef-footer-links a:hover {
+  opacity: 1;
+  text-decoration-thickness: 2px;
+}
+
+.omef-footer-bottom {
+  border-top: 1px solid color-mix(in srgb, var(--omef-paper) 18%, transparent);
+  margin-top: 1rem;
+  padding-block: 1.25rem;
+}
+
+.omef-footer-bottom p {
+  opacity: 0.75;
+}
+
 .wp-block-button__link,
 .woocommerce a.button,
 .woocommerce button.button,
@@ -131,6 +209,94 @@ select:focus-visible {
   min-height: auto;
   min-width: auto;
   padding: 0.35rem 0.6rem;
+}
+
+.omef-shop-intro h1 {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  letter-spacing: -0.06em;
+  max-width: 14ch;
+}
+
+.woocommerce ul.products {
+  display: grid;
+  gap: clamp(1.5rem, 3vw, 2.5rem) clamp(1rem, 2vw, 1.75rem);
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+}
+
+.woocommerce ul.products li.product {
+  margin: 0 !important;
+  width: auto !important;
+}
+
+.woocommerce ul.products li.product img {
+  border-radius: 0;
+}
+
+.woocommerce ul.products li.product .woocommerce-loop-product__title {
+  font-weight: 700;
+  margin-block: 0.75rem 0.2rem;
+}
+
+.omef-product-page .woocommerce-breadcrumb {
+  color: color-mix(in srgb, var(--omef-ink) 62%, var(--omef-paper));
+  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.omef-product-page div.product .woocommerce-product-gallery {
+  max-width: 34rem;
+}
+
+.omef-product-page div.product .summary {
+  padding-inline-start: clamp(1.5rem, 4vw, 3rem);
+}
+
+.omef-product-page .product_title {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  letter-spacing: -0.04em;
+}
+
+.omef-product-page .price {
+  color: var(--omef-ink);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.omef-cart-page table.shop_table,
+.omef-checkout-page table.shop_table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.omef-cart-page table.shop_table th,
+.omef-cart-page table.shop_table td,
+.omef-checkout-page table.shop_table th,
+.omef-checkout-page table.shop_table td {
+  border-bottom: 1px solid var(--omef-paper-deep);
+  padding: 0.9rem 0.6rem;
+}
+
+.omef-cart-page .cart-collaterals,
+.omef-checkout-page #order_review {
+  background: var(--omef-paper-deep);
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.omef-checkout-page form.checkout .form-row input.input-text,
+.omef-checkout-page form.checkout .form-row textarea,
+.omef-checkout-page form.checkout .form-row select {
+  border: 1px solid color-mix(in srgb, var(--omef-ink) 25%, transparent);
+  padding: 0.7rem 0.8rem;
+  width: 100%;
+}
+
+.omef-checkout-page #payment {
+  background: var(--omef-paper-deep);
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.omef-checkout-page #payment .place-order .button {
+  width: 100%;
 }
 
 .omef-product-facts {
@@ -324,5 +490,17 @@ select:focus-visible {
 
   .omef-hero h1 {
     font-size: clamp(3.2rem, 18vw, 5rem);
+  }
+
+  .omef-footer-columns {
+    gap: 2.25rem;
+  }
+
+  .omef-product-page div.product .summary {
+    padding-inline-start: 0;
+  }
+
+  .woocommerce ul.products {
+    grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
   }
 }

@@ -178,6 +178,46 @@ function omef_prepend_tasting_details( string $content ): string {
 }
 add_filter( 'the_content', 'omef_prepend_tasting_details', 9 );
 
+function omef_prepend_workshop_details( string $content ): string {
+	if ( ! is_singular( 'omef_workshop' ) || ! in_the_loop() || ! is_main_query() ) {
+		return $content;
+	}
+
+	$post_id     = get_the_ID();
+	$duration    = get_post_meta( $post_id, '_omef_duration', true );
+	$group_size  = get_post_meta( $post_id, '_omef_group_size', true );
+	$price_range = get_post_meta( $post_id, '_omef_price_range', true );
+	$inclusions  = get_post_meta( $post_id, '_omef_inclusions', true );
+
+	$details = array();
+	if ( $duration ) {
+		$details[] = '<span><strong>משך:</strong> ' . esc_html( $duration ) . '</span>';
+	}
+	if ( $group_size ) {
+		$details[] = '<span><strong>מספר משתתפים:</strong> ' . esc_html( $group_size ) . '</span>';
+	}
+	if ( $price_range ) {
+		$details[] = '<span><strong>טווח מחירים:</strong> ' . esc_html( $price_range ) . '</span>';
+	}
+
+	if ( ! $details && ! $inclusions ) {
+		return $content;
+	}
+
+	$html = '<section class="omef-tasting-details"><dl>';
+	foreach ( $details as $detail ) {
+		$html .= '<div>' . $detail . '</div>';
+	}
+	$html .= '</dl>';
+	if ( $inclusions ) {
+		$html .= '<p class="omef-product-notes">' . nl2br( esc_html( $inclusions ) ) . '</p>';
+	}
+	$html .= '</section>';
+
+	return $html . $content;
+}
+add_filter( 'the_content', 'omef_prepend_workshop_details', 9 );
+
 function omef_output_episode_schema(): void {
 	if ( ! is_singular( 'omef_episode' ) ) {
 		return;

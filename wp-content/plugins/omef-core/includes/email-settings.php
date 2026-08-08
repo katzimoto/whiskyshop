@@ -149,99 +149,42 @@ add_filter( 'woocommerce_email_subject_customer_processing_order', 'omef_custome
 add_filter( 'woocommerce_email_subject_customer_completed_order', 'omef_customer_email_subject', 10, 2 );
 add_filter( 'woocommerce_email_subject_customer_on_hold_order', 'omef_customer_email_subject', 10, 2 );
 
-function omef_email_register_settings(): void {
-	register_setting(
-		'omef_email',
-		'omef_admin_notification_enabled',
-		array( 'type' => 'boolean', 'sanitize_callback' => static fn( $value ) => empty( $value ) ? 'no' : 'yes' )
-	);
-	register_setting(
-		'omef_email',
-		'omef_admin_notification_to',
+function omef_sanitize_email_list( string $value ): string {
+	$emails = array();
+	foreach ( explode( ',', $value ) as $email ) {
+		$email = trim( $email );
+		if ( is_email( $email ) ) {
+			$emails[] = $email;
+		}
+	}
+	return implode( ', ', $emails );
+}
+
+function omef_email_settings_get(): void {
+	omef_dashboard_guard( 'manage_options' );
+
+	wp_send_json_success(
 		array(
-			'type'              => 'string',
-			'sanitize_callback' => static function ( $value ) {
-				$emails = array();
-				foreach ( explode( ',', (string) $value ) as $email ) {
-					$email = trim( $email );
-					if ( is_email( $email ) ) {
-						$emails[] = $email;
-					}
-				}
-				return implode( ', ', $emails );
-			},
+			'adminNotificationEnabled' => get_option( 'omef_admin_notification_enabled', 'yes' ) === 'yes',
+			'adminNotificationTo'      => get_option( 'omef_admin_notification_to', '' ),
+			'customerEmailEnabled'     => get_option( 'omef_customer_email_enabled', 'yes' ) === 'yes',
+			'customerEmailSubject'     => get_option( 'omef_customer_email_subject', '' ),
+			'customerEmailTemplate'    => get_option( 'omef_customer_email_template', omef_email_template_default() ),
+			'placeholders'             => array( '{customer_name}', '{order_number}', '{order_date}', '{order_status}', '{items}', '{subtotal}', '{shipping_total}', '{total}', '{payment_method}', '{billing_address}', '{shipping_address}' ),
 		)
 	);
-	register_setting(
-		'omef_email',
-		'omef_customer_email_enabled',
-		array( 'type' => 'boolean', 'sanitize_callback' => static fn( $value ) => empty( $value ) ? 'no' : 'yes' )
-	);
-	register_setting(
-		'omef_email',
-		'omef_customer_email_subject',
-		array( 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' )
-	);
-	register_setting(
-		'omef_email',
-		'omef_customer_email_template',
-		array( 'type' => 'string', 'sanitize_callback' => 'wp_kses_post' )
-	);
 }
-add_action( 'admin_init', 'omef_email_register_settings' );
+add_action( 'wp_ajax_omef_email_settings_get', 'omef_email_settings_get' );
 
-function omef_email_admin_menu(): void {
-	add_submenu_page(
-		'options-general.php',
-		'התראות דוא"ל',
-		'התראות דוא"ל',
-		'manage_options',
-		'omef-emails',
-		'omef_render_email_settings'
-	);
-}
-add_action( 'admin_menu', 'omef_email_admin_menu' );
+function omef_email_settings_save(): void {
+	omef_dashboard_guard( 'manage_options' );
 
-function omef_render_email_settings(): void {
-	if ( ! current_user_can( 'manage_options' ) ) {
-		return;
-	}
-	?>
-	<div class="wrap">
-		<h1>הזמנות בדוא"ל</h1>
-		<form action="options.php" method="post">
-			<?php settings_fields( 'omef_email' ); ?>
-			<h2>הודעה למנהל על כל רכישה</h2>
-			<table class="form-table" role="presentation">
-				<tr>
-					<th scope="row"><label for="omef_admin_notification_enabled">שליחת הודעה למנהל</label></th>
-					<td><input id="omef_admin_notification_enabled" name="omef_admin_notification_enabled" type="checkbox" value="yes" <?php checked( get_option( 'omef_admin_notification_enabled', 'yes' ), 'yes' ); ?>></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="omef_admin_notification_to">כתובות למנהל</label></th>
-					<td><input class="regular-text code" id="omef_admin_notification_to" name="omef_admin_notification_to" type="text" value="<?php echo esc_attr( get_option( 'omef_admin_notification_to', '' ) ); ?>" placeholder="admin@example.com, other@example.com"><p class="description">מסופרות בפסיק. אם ריקות — הודעה נשלחת לכתובת המנהל הראשית.</p></td>
-				</tr>
-			</table>
-			<h2>הודעת לקוח (תבנית הניתנת לעריכה)</h2>
-			<table class="form-table" role="presentation">
-				<tr>
-					<th scope="row"><label for="omef_customer_email_enabled">שליחת הודעות ללקוחות</label></th>
-					<td><input id="omef_customer_email_enabled" name="omef_customer_email_enabled" type="checkbox" value="yes" <?php checked( get_option( 'omef_customer_email_enabled', 'yes' ), 'yes' ); ?>></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="omef_customer_email_subject">שורת הנושא</label></th>
-					<td><input class="regular-text" id="omef_customer_email_subject" name="omef_customer_email_subject" type="text" value="<?php echo esc_attr( get_option( 'omef_customer_email_subject', '' ) ); ?>" placeholder="הזמנה #{order_number} — אתר הוויסקי"></td>
-				</tr>
-				<tr>
-					<th scope="row"><label for="omef_customer_email_template">תוכן ההודעה</label></th>
-					<td>
-						<textarea class="large-text code" id="omef_customer_email_template" name="omef_customer_email_template" rows="16"><?php echo esc_textarea( get_option( 'omef_customer_email_template', omef_email_template_default() ) ); ?></textarea>
-						<p class="description">משתנים זמינים: {customer_name}, {order_number}, {order_date}, {order_status}, {items}, {subtotal}, {shipping_total}, {total}, {payment_method}, {billing_address}, {shipping_address}</p>
-					</td>
-				</tr>
-			</table>
-			<?php submit_button( 'שמירה' ); ?>
-		</form>
-	</div>
-	<?php
+	update_option( 'omef_admin_notification_enabled', empty( $_POST['admin_notification_enabled'] ) ? 'no' : 'yes' );
+	update_option( 'omef_admin_notification_to', omef_sanitize_email_list( sanitize_text_field( wp_unslash( $_POST['admin_notification_to'] ?? '' ) ) ) );
+	update_option( 'omef_customer_email_enabled', empty( $_POST['customer_email_enabled'] ) ? 'no' : 'yes' );
+	update_option( 'omef_customer_email_subject', sanitize_text_field( wp_unslash( $_POST['customer_email_subject'] ?? '' ) ) );
+	update_option( 'omef_customer_email_template', wp_kses_post( wp_unslash( $_POST['customer_email_template'] ?? '' ) ) );
+
+	wp_send_json_success();
 }
+add_action( 'wp_ajax_omef_email_settings_save', 'omef_email_settings_save' );

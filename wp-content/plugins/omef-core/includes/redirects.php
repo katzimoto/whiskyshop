@@ -67,104 +67,48 @@ function omef_apply_redirect(): void {
 }
 add_action( 'template_redirect', 'omef_apply_redirect', 0 );
 
-function omef_redirect_admin_menu(): void {
-	add_submenu_page(
-		'options-general.php',
-		'הפניות (301)',
-		'הפניות',
-		'manage_options',
-		'omef-redirects',
-		'omef_render_redirects'
-	);
-}
-add_action( 'admin_menu', 'omef_redirect_admin_menu' );
+function omef_redirects_list_ajax(): void {
+	omef_dashboard_guard( 'manage_options' );
 
-function omef_render_redirects(): void {
 	global $wpdb;
-
-	$notice = get_transient( 'omef_redirect_notice_' . get_current_user_id() );
-	if ( $notice ) {
-		delete_transient( 'omef_redirect_notice_' . get_current_user_id() );
-	}
-
 	$rows = $wpdb->get_results( 'SELECT * FROM ' . omef_redirect_table() . ' ORDER BY id DESC' );
-	?>
-	<div class="wrap">
-		<h1>הפניות (301)</h1>
-		<?php if ( $notice ) : ?>
-			<div class="notice notice-success is-dismissible"><p><?php echo esc_html( $notice ); ?></p></div>
-		<?php endif; ?>
-		<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post">
-			<input name="action" type="hidden" value="omef_redirect_add">
-			<?php wp_nonce_field( 'omef_redirect_add' ); ?>
-			<table class="form-table" role="presentation">
-				<tr>
-					<th><label for="omef_source">נתיב ישן (מקור)</label></th>
-					<td><input class="regular-text code" id="omef_source" name="source" type="text" placeholder="old-bottle/"></td>
-				</tr>
-				<tr>
-					<th><label for="omef_target">יעד</label></th>
-					<td><input class="regular-text code" id="omef_target" name="target" type="text" placeholder="shop/"></td>
-				</tr>
-			</table>
-			<?php submit_button( 'הוספת הפנייה' ); ?>
-		</form>
-		<hr>
-		<table class="widefat striped">
-			<thead><tr><th>מקור</th><th>יעד</th><th>מצב</th><th></th></tr></thead>
-			<tbody>
-			<?php if ( ! $rows ) : ?>
-				<tr><td colspan="4">אין הפניות.</td></tr>
-			<?php endif; ?>
-			<?php foreach ( (array) $rows as $row ) : ?>
-				<tr>
-					<td><code>/<?php echo esc_html( $row->source ); ?></code></td>
-					<td><code>/<?php echo esc_html( $row->target ); ?></code></td>
-					<td><?php echo $row->active ? 'פעילה' : 'מושבתת'; ?></td>
-					<td>
-						<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" style="display:inline">
-							<input name="action" type="hidden" value="omef_redirect_delete">
-							<input name="id" type="hidden" value="<?php echo esc_attr( (string) $row->id ); ?>">
-							<?php wp_nonce_field( 'omef_redirect_delete' ); ?>
-							<button class="button-link delete">מחיקה</button>
-						</form>
-					</td>
-				</tr>
-			<?php endforeach; ?>
-			</tbody>
-		</table>
-	</div>
-	<?php
+
+	$redirects = array_map(
+		static fn( $row ): array => array(
+			'id'     => (int) $row->id,
+			'source' => $row->source,
+			'target' => $row->target,
+			'active' => (bool) $row->active,
+		),
+		(array) $rows
+	);
+
+	wp_send_json_success( array( 'redirects' => $redirects ) );
 }
+add_action( 'wp_ajax_omef_redirects_list', 'omef_redirects_list_ajax' );
 
-function omef_redirect_add_action(): void {
-	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_die( 'אין הרשאה.' );
-	}
-	check_admin_referer( 'omef_redirect_add' );
+function omef_redirects_add_ajax(): void {
+	omef_dashboard_guard( 'manage_options' );
 
-	$source = omef_normalize_redirect_source( isset( $_POST['source'] ) ? wp_unslash( $_POST['source'] ) : '' );
-	$target = omef_normalize_redirect_source( isset( $_POST['target'] ) ? wp_unslash( $_POST['target'] ) : '' );
+	$source = omef_normalize_redirect_source( sanitize_text_field( wp_unslash( $_POST['source'] ?? '' ) ) );
+	$target = omef_normalize_redirect_source( sanitize_text_field( wp_unslash( $_POST['target'] ?? '' ) ) );
 
-	if ( $source && $target ) {
-		global $wpdb;
-		$wpdb->replace(
-			omef_redirect_table(),
-			array( 'source' => $source, 'target' => $target, 'active' => 1 )
-		);
-		set_transient( 'omef_redirect_notice_' . get_current_user_id(), 'ההפניה נשמרה.', MINUTE_IN_SECONDS );
+	if ( ! $source || ! $target ) {
+		wp_send_json_error( array( 'message' => 'יש להזין נתיב מקור ויעד תקינים.' ) );
 	}
 
-	wp_safe_redirect( admin_url( 'options-general.php?page=omef-redirects' ) );
-	exit;
+	global $wpdb;
+	$wpdb->replace(
+		omef_redirect_table(),
+		array( 'source' => $source, 'target' => $target, 'active' => 1 )
+	);
+
+	wp_send_json_success();
 }
-add_action( 'admin_post_omef_redirect_add', 'omef_redirect_add_action' );
+add_action( 'wp_ajax_omef_redirects_add', 'omef_redirects_add_ajax' );
 
-function omef_redirect_delete_action(): void {
-	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_die( 'אין הרשאה.' );
-	}
-	check_admin_referer( 'omef_redirect_delete' );
+function omef_redirects_delete_ajax(): void {
+	omef_dashboard_guard( 'manage_options' );
 
 	global $wpdb;
 	$wpdb->delete(
@@ -172,11 +116,6 @@ function omef_redirect_delete_action(): void {
 		array( 'id' => absint( $_POST['id'] ?? 0 ) )
 	);
 
-	wp_safe_redirect( admin_url( 'options-general.php?page=omef-redirects' ) );
-	exit;
+	wp_send_json_success();
 }
-add_action( 'admin_post_omef_redirect_delete', 'omef_redirect_delete_action' );
-
-add_action( 'admin_head', static function (): void {
-	echo '<style>.button-link.delete{color:#b32d2e}</style>';
-} );
+add_action( 'wp_ajax_omef_redirects_delete', 'omef_redirects_delete_ajax' );

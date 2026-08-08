@@ -176,6 +176,14 @@ function omef_ensure_tasting_product( int $post_id, WP_Post $post, float $price,
 	return $product_id;
 }
 
+function omef_sample_attribute_labels(): array {
+	return array(
+		'attribute' => 'גודל דגימה',
+		'full'      => 'בקבוק מלא (700 מ"ל)',
+		'sample'    => 'דגימה (30 מ"ל)',
+	);
+}
+
 function omef_ensure_sample_variations( int $product_id, float $sample_price ): void {
 	static $in_progress = array();
 	if ( $sample_price <= 0 || ! function_exists( 'wc_get_product' ) || isset( $in_progress[ $product_id ] ) ) {
@@ -189,9 +197,10 @@ function omef_ensure_sample_variations( int $product_id, float $sample_price ): 
 
 	$in_progress[ $product_id ] = true;
 
-	$attribute_name = 'גודל דגימה';
-	$full_label     = 'בקבוק מלא (700 מ"ל)';
-	$sample_label   = 'דגימה (30 מ"ל)';
+	$labels          = omef_sample_attribute_labels();
+	$attribute_name  = $labels['attribute'];
+	$full_label      = $labels['full'];
+	$sample_label    = $labels['sample'];
 
 	$base_price = (float) $product->get_regular_price( 'edit' );
 	$base_stock = $product->get_stock_quantity( 'edit' );

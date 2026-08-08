@@ -85,7 +85,7 @@ function omef_mark_cart_converted( int $order_id ): void {
 }
 add_action( 'woocommerce_checkout_order_processed', 'omef_mark_cart_converted', 10, 1 );
 
-function omef_send_abandoned_reminders(): void {
+function omef_send_abandoned_reminders(): int {
 	global $wpdb;
 	$table = omef_abandoned_table();
 	$rows = $wpdb->get_results(
@@ -105,6 +105,46 @@ function omef_send_abandoned_reminders(): void {
 		);
 		$wpdb->update( $table, array( 'reminded_at' => current_time( 'mysql' ) ), array( 'id' => $row->id ) );
 	}
+
+	return count( (array) $rows );
 }
 add_action( 'omef_abandoned_reminder_cron', 'omef_send_abandoned_reminders' );
+
+function omef_abandoned_list_ajax(): void {
+	omef_dashboard_guard( 'manage_woocommerce' );
+
+	global $wpdb;
+	$rows = $wpdb->get_results( 'SELECT * FROM ' . omef_abandoned_table() . ' ORDER BY created_at DESC LIMIT 200' );
+
+	$carts = array_map(
+		static function ( $row ): array {
+			$status = 'ממתין';
+			if ( $row->converted_at ) {
+				$status = 'הומר לרכישה';
+			} elseif ( $row->reminded_at ) {
+				$status = 'נשלחה תזכורת';
+			}
+
+			return array(
+				'email'      => $row->email,
+				'createdAt'  => mysql2date( 'd/m/Y H:i', $row->created_at ),
+				'remindedAt' => $row->reminded_at ? mysql2date( 'd/m/Y H:i', $row->reminded_at ) : null,
+				'convertedAt' => $row->converted_at ? mysql2date( 'd/m/Y H:i', $row->converted_at ) : null,
+				'status'     => $status,
+			);
+		},
+		(array) $rows
+	);
+
+	wp_send_json_success( array( 'carts' => $carts ) );
+}
+add_action( 'wp_ajax_omef_abandoned_list', 'omef_abandoned_list_ajax' );
+
+function omef_abandoned_remind_ajax(): void {
+	omef_dashboard_guard( 'manage_woocommerce' );
+
+	$sent = omef_send_abandoned_reminders();
+	wp_send_json_success( array( 'sent' => $sent ) );
+}
+add_action( 'wp_ajax_omef_abandoned_remind', 'omef_abandoned_remind_ajax' );
 
