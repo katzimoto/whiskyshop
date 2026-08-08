@@ -3,9 +3,6 @@ name: Deploy to VPS
 on:
   push:
     branches: [main]
-    paths:
-      - 'wp-content/plugins/omef-core/**'
-      - 'wp-content/themes/omef/**'
   workflow_dispatch:
 
 concurrency:
@@ -25,7 +22,7 @@ jobs:
           find wp-content/plugins/omef-core wp-content/themes/omef -name '*.php' -print0 | xargs -0 -n1 php -l || exit 1
 
   deploy:
-    name: Deploy wp-content to VPS
+    name: Redeploy site on VPS
     needs: lint
     runs-on: ubuntu-latest
     steps:
@@ -55,13 +52,26 @@ jobs:
             ./wp-content/themes/omef/ \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/wp-content/themes/omef/"
 
-      - name: Post-deploy command (optional)
+      - name: Sync stack definition
+        run: |
+          rsync -az --checksum --mkpath \
+            -e "ssh -p '${{ secrets.SSH_PORT || '22' }}' -o StrictHostKeyChecking=accept-new" \
+            ./docker/ \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/docker/"
+          rsync -az --checksum \
+            -e "ssh -p '${{ secrets.SSH_PORT || '22' }}' -o StrictHostKeyChecking=accept-new" \
+            ./docker-compose.yml \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/docker-compose.yml"
+
+      - name: Reload the running site
         env:
           SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
           SSH_USER: ${{ secrets.SSH_USER }}
           SSH_HOST: ${{ secrets.SSH_HOST }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
           REMOTE_CMD: ${{ secrets.DEPLOY_REMOTE_CMD }}
         run: |
+          ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "cd '$DEPLOY_PATH' && docker compose up -d --no-deps && docker compose restart wordpress nginx"
           if [ -n "$REMOTE_CMD" ]; then
             ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "$REMOTE_CMD"
           fi
