@@ -92,6 +92,11 @@ jobs:
             WP plugin activate woocommerce
           fi
 
+          echo "== payment gateways (temporary mock card until a real processor is wired up) =="
+          WP option update woocommerce_bacs_settings --format=json '{"enabled":"no"}'
+          WP option update woocommerce_cod_settings --format=json '{"enabled":"no"}'
+          WP option update woocommerce_omef_mock_card_settings --format=json '{"enabled":"yes","title":"כרטיס אשראי","description":"התשלום מאובטח ומעובד בעת אישור ההזמנה."}'
+
           echo "== remove default junk content =="
           while read -r id; do
             [ -n "$id" ] && WP post delete "$id" --force || true
