@@ -82,7 +82,11 @@ jobs:
         run: |
           ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "cd '$DEPLOY_PATH' && bash -s" <<'REMOTE'
           set -e
-          WP() { docker compose exec -T wordpress wp --allow-root "$@"; }
+          # docker compose exec inherits stdin by default; since this whole
+          # script arrives over one SSH/stdin stream, the first exec call
+          # would otherwise drain the rest of the heredoc as its own input
+          # and silently truncate everything after it. Always give it /dev/null.
+          WP() { docker compose exec -T wordpress wp --allow-root "$@" < /dev/null; }
 
           echo "== WooCommerce =="
           WP plugin is-installed woocommerce || WP plugin install woocommerce --version=11.0.0
@@ -102,7 +106,7 @@ jobs:
           done < <(WP post list --post_type=post,page --name=sample-page --field=ID --format=csv)
 
           echo "== seed content from fixtures =="
-          docker compose exec -T wordpress php -l wp-content/plugins/omef-core/fixtures/provision-seed.php
+          docker compose exec -T wordpress php -l wp-content/plugins/omef-core/fixtures/provision-seed.php < /dev/null
           WP eval-file wp-content/plugins/omef-core/fixtures/provision-seed.php
 
           echo "== refresh =="
