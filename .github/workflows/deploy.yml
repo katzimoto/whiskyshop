@@ -85,12 +85,8 @@ jobs:
           WP() { docker compose exec -T wordpress wp --allow-root "$@"; }
 
           echo "== WooCommerce =="
-          if ! WP plugin is-active woocommerce; then
-            WP plugin install woocommerce --force --activate --version=11.0.0
-          else
-            WP plugin is-installed woocommerce || WP plugin install woocommerce --version=11.0.0
-            WP plugin activate woocommerce
-          fi
+          WP plugin is-installed woocommerce || WP plugin install woocommerce --version=11.0.0
+          WP plugin is-active woocommerce || WP plugin activate woocommerce
 
           echo "== payment gateways (temporary mock card until a real processor is wired up) =="
           WP option update woocommerce_bacs_settings --format=json '{"enabled":"no"}'
@@ -104,6 +100,10 @@ jobs:
           while read -r id; do
             [ -n "$id" ] && WP post delete "$id" --force || true
           done < <(WP post list --post_type=post,page --name=sample-page --field=ID --format=csv)
+
+          echo "== seed content from fixtures =="
+          docker compose exec -T wordpress php -l wp-content/plugins/omef-core/fixtures/provision-seed.php
+          WP eval-file wp-content/plugins/omef-core/fixtures/provision-seed.php
 
           echo "== refresh =="
           WP rewrite flush
