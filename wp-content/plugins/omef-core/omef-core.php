@@ -27,6 +27,7 @@ $omef_includes = array(
 	'abandoned-cart.php',
 	'mail.php',
 	'leads.php',
+	'mock-payment.php',
 	'dashboard.php',
 	'dashboard-products.php',
 	'dashboard-orders.php',

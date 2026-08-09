@@ -50,7 +50,8 @@ function omef_capture_abandoned_cart(): void {
 }
 add_action( 'woocommerce_cart_updated', 'omef_capture_abandoned_cart' );
 
-function omef_capture_checkout_email( array $posted ): void {
+function omef_capture_checkout_email( string $posted_data ): void {
+	parse_str( $posted_data, $posted );
 	if ( empty( $posted['billing_email'] ) || ! is_email( $posted['billing_email'] ) ) {
 		return;
 	}
