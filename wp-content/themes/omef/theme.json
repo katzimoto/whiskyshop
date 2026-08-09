@@ -6,9 +6,9 @@
     "useRootPaddingAwareAlignments": true,
     "color": {
       "palette": [
-        { "color": "#142521", "name": "ירוק עמוק", "slug": "ink" },
+        { "color": "#1c1712", "name": "עץ אפל", "slug": "ink" },
         { "color": "#f4efe5", "name": "קלף", "slug": "paper" },
-        { "color": "#bd8e4b", "name": "פליז", "slug": "brass" },
+        { "color": "#e0994f", "name": "ענבר", "slug": "brass" },
         { "color": "#a9482e", "name": "טרה קוטה", "slug": "clay" }
       ]
     },
@@ -44,8 +44,8 @@
       }
     },
     "color": {
-      "background": "var:preset|color|paper",
-      "text": "var:preset|color|ink"
+      "background": "var:preset|color|ink",
+      "text": "var:preset|color|paper"
     },
     "typography": {
       "fontFamily": "var:preset|font-family|heebo",
@@ -59,7 +59,7 @@
         }
       },
       "link": {
-        "color": { "text": "var:preset|color|ink" }
+        "color": { "text": "var:preset|color|paper" }
       }
     }
   },

@@ -10,11 +10,11 @@ Text Domain: omef
 */
 
 :root {
-  --omef-ink: #142521;
-  --omef-ink-soft: #223832;
+  --omef-ink: #1c1712;
+  --omef-ink-soft: #241d17;
   --omef-paper: #f4efe5;
   --omef-paper-deep: #e7dece;
-  --omef-brass: #bd8e4b;
+  --omef-brass: #e0994f;
   --omef-clay: #a9482e;
 }
 
@@ -34,7 +34,9 @@ body {
 }
 
 body {
-  background: var(--omef-paper);
+  background:
+    radial-gradient(ellipse 60% 40% at 50% -5%, color-mix(in srgb, var(--omef-brass) 12%, transparent), transparent),
+    var(--omef-ink);
 }
 
 a {
@@ -101,8 +103,8 @@ select:focus-visible {
 
 .omef-hero {
   background:
-    linear-gradient(115deg, rgba(20, 37, 33, 0.98), rgba(20, 37, 33, 0.82)),
-    radial-gradient(circle at 80% 20%, rgba(189, 142, 75, 0.3), transparent 28%);
+    linear-gradient(115deg, rgba(28, 23, 18, 0.98), rgba(28, 23, 18, 0.82)),
+    radial-gradient(circle at 80% 20%, rgba(224, 153, 79, 0.35), transparent 28%);
   color: var(--omef-paper);
   min-height: 62vh;
 }
@@ -127,7 +129,7 @@ select:focus-visible {
 }
 
 .omef-section-heading {
-  border-top: 2px solid var(--omef-ink);
+  border-top: 2px solid var(--omef-brass);
   padding-top: 1rem;
 }
 
@@ -202,21 +204,28 @@ select:focus-visible {
 .woocommerce a.button,
 .woocommerce button.button,
 .woocommerce input.button {
-  background: var(--omef-ink);
-  border-radius: 0;
-  color: var(--omef-paper);
+  background: var(--omef-brass);
+  border-radius: 999px;
+  color: var(--omef-ink);
   font-weight: 700;
-  padding: 0.8rem 1.3rem;
+  padding: 0.8rem 1.5rem;
+}
+
+.wp-block-button__link:hover,
+.woocommerce a.button:hover,
+.woocommerce button.button:hover,
+.woocommerce input.button:hover {
+  background: color-mix(in srgb, var(--omef-brass) 85%, white);
 }
 
 .woocommerce ul.products li.product .woocommerce-loop-product__title {
-  color: var(--omef-ink);
+  color: var(--omef-paper);
   font-size: 1.15rem;
 }
 
 .woocommerce span.onsale {
   background: var(--omef-clay);
-  border-radius: 0;
+  border-radius: 999px;
   min-height: auto;
   min-width: auto;
   padding: 0.35rem 0.6rem;
@@ -258,7 +267,7 @@ select:focus-visible {
 }
 
 .omef-product-page .woocommerce-breadcrumb {
-  color: color-mix(in srgb, var(--omef-ink) 62%, var(--omef-paper));
+  color: color-mix(in srgb, var(--omef-paper) 65%, var(--omef-ink));
   font-size: 0.85rem;
   margin-bottom: 1.5rem;
 }
@@ -277,7 +286,7 @@ select:focus-visible {
 }
 
 .omef-product-page .price {
-  color: var(--omef-ink);
+  color: var(--omef-paper);
   font-size: 1.4rem;
   font-weight: 700;
 }
@@ -318,7 +327,7 @@ select:focus-visible {
 }
 
 .omef-gallery-card__caption .wp-block-post-date {
-  color: color-mix(in srgb, var(--omef-ink) 60%, var(--omef-paper));
+  color: color-mix(in srgb, var(--omef-paper) 65%, var(--omef-ink));
 }
 
 .omef-cart-page table.shop_table,
@@ -337,7 +346,7 @@ select:focus-visible {
 
 .omef-cart-page .cart-collaterals,
 .omef-checkout-page #order_review {
-  background: var(--omef-paper-deep);
+  background: color-mix(in srgb, var(--omef-paper) 8%, transparent);
   padding: clamp(1.25rem, 3vw, 2rem);
 }
 
@@ -355,7 +364,7 @@ select:focus-visible {
 }
 
 .omef-checkout-page #payment {
-  background: var(--omef-paper-deep);
+  background: color-mix(in srgb, var(--omef-paper) 8%, transparent);
   padding: clamp(1.25rem, 3vw, 2rem);
 }
 
@@ -383,7 +392,7 @@ select:focus-visible {
 }
 
 .omef-product-facts dt {
-  color: color-mix(in srgb, var(--omef-ink) 62%, var(--omef-paper));
+  color: color-mix(in srgb, var(--omef-paper) 65%, var(--omef-ink));
 }
 
 .omef-product-facts dd {
@@ -398,7 +407,7 @@ select:focus-visible {
 }
 
 .omef-product-episodes {
-  background: var(--omef-paper-deep);
+  background: color-mix(in srgb, var(--omef-paper) 8%, transparent);
   margin-top: 3rem;
   padding: clamp(1.5rem, 4vw, 3rem);
 }
@@ -410,28 +419,28 @@ select:focus-visible {
 }
 
 .omef-product-episodes li + li {
-  border-top: 1px solid color-mix(in srgb, var(--omef-ink) 18%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--omef-paper) 18%, transparent);
   margin-top: 0.65rem;
   padding-top: 0.65rem;
 }
 
 .omef-product-card-facts {
-  color: color-mix(in srgb, var(--omef-ink) 72%, var(--omef-paper));
+  color: color-mix(in srgb, var(--omef-paper) 75%, var(--omef-ink));
   font-size: 0.85rem;
   margin: 0.35rem 0;
 }
 
 .omef-episode-card {
-  border-top: 2px solid var(--omef-ink);
+  border-top: 2px solid var(--omef-brass);
   padding-top: 1rem;
 }
 
 .omef-episode-card .wp-block-post-date {
-  color: color-mix(in srgb, var(--omef-ink) 62%, var(--omef-paper));
+  color: color-mix(in srgb, var(--omef-paper) 65%, var(--omef-ink));
 }
 
 .omef-episode-products {
-  background: var(--omef-paper-deep);
+  background: color-mix(in srgb, var(--omef-paper) 8%, transparent);
   margin-top: 3rem;
   padding: clamp(1.5rem, 4vw, 3rem);
 }
@@ -453,7 +462,7 @@ select:focus-visible {
 }
 
 .omef-alcohol-notice {
-  background: var(--omef-paper-deep);
+  background: color-mix(in srgb, var(--omef-paper) 8%, transparent);
   border-right: 3px solid var(--omef-brass);
   font-size: 0.9rem;
   margin: 0 0 1.5rem;
@@ -499,6 +508,7 @@ select:focus-visible {
 .omef-age-gate__card button {
   background: var(--omef-ink);
   border: 0;
+  border-radius: 999px;
   color: var(--omef-paper);
   cursor: pointer;
   font: inherit;
@@ -539,9 +549,10 @@ select:focus-visible {
 }
 
 .omef-contact-form button {
-  background: var(--omef-ink);
+  background: var(--omef-brass);
   border: 0;
-  color: var(--omef-paper);
+  border-radius: 999px;
+  color: var(--omef-ink);
   cursor: pointer;
   font: inherit;
   font-weight: 700;
@@ -549,18 +560,18 @@ select:focus-visible {
 }
 
 .omef-contact-form button:hover {
-  opacity: 0.85;
+  background: color-mix(in srgb, var(--omef-brass) 85%, white);
 }
 
 .omef-form-notice {
-  background: var(--omef-paper-deep);
+  background: color-mix(in srgb, var(--omef-paper) 8%, transparent);
   border-right: 3px solid var(--omef-brass);
   margin: 0 0 1.5rem;
   padding: 0.9rem 1.1rem;
 }
 
 .omef-tasting-details {
-  background: var(--omef-paper-deep);
+  background: color-mix(in srgb, var(--omef-paper) 8%, transparent);
   border-right: 3px solid var(--omef-brass);
   margin: 0 0 2rem;
   padding: clamp(1.5rem, 4vw, 3rem);
@@ -573,13 +584,14 @@ select:focus-visible {
 }
 
 .omef-tasting-details dl div + div {
-  border-top: 1px solid color-mix(in srgb, var(--omef-ink) 18%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--omef-paper) 18%, transparent);
   padding-top: 0.7rem;
 }
 
 .omef-tasting-details .wp-element-button {
-  background: var(--omef-ink);
-  color: var(--omef-paper);
+  background: var(--omef-brass);
+  border-radius: 999px;
+  color: var(--omef-ink);
   display: inline-block;
   font-weight: 700;
   padding: 0.8rem 1.3rem;
