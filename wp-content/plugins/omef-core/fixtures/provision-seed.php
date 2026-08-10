@@ -51,62 +51,36 @@ function seed_ensure_term( string $taxonomy, string $name, string $slug, int $pa
 }
 
 function seed_attachment_id( string $mid, string $extension, string $attachment_name ): int {
-	$rel_y     = gmdate( 'Y' );
-	$rel_m     = gmdate( 'm' );
-	$filename  = $mid . '~mv2.' . $extension;
-	$uploads   = wp_upload_dir();
-	$target    = trailingslashit( $uploads['path'] ) . $filename;
-	$basesearch = array(
-		trailingslashit( $uploads['basedir'] ) . '2026/08/' . $filename,
-		$target,
-	);
+	$filename = $mid . '~mv2.' . $extension;
 
-	$path = '';
-	foreach ( $basesearch as $candidate ) {
-		if ( file_exists( $candidate ) ) {
-			$path = $candidate;
-			break;
-		}
+	// Any existing attachment carrying this media id (basename keeps the
+	// d32e7e_…mv2 prefix regardless of the year/month folder or the -N suffix
+	// sideload appends) is reused so re-running the seed never re-downloads.
+	$existing = seed_find_attachment_by_media_id( $mid );
+	if ( $existing ) {
+		return (int) $existing;
 	}
 
-	if ( ! $path ) {
-		$url = 'https://static.wixstatic.com/media/' . $filename;
-		$tid = media_sideload_image( $url, 0, $attachment_name, 'id' );
-		if ( is_wp_error( $tid ) ) {
-			WP_CLI::warning( 'sideload ' . $filename . ': ' . $tid->get_error_message() );
-			return 0;
-		}
-		WP_CLI::log( 'sideloaded ' . $filename . ' -> #' . $tid );
-		return (int) $tid;
+	$url = 'https://static.wixstatic.com/media/' . $filename;
+	$tid = media_sideload_image( $url, 0, $attachment_name, 'id' );
+	if ( is_wp_error( $tid ) ) {
+		WP_CLI::warning( 'sideload ' . $filename . ': ' . $tid->get_error_message() );
+		return 0;
 	}
-
-	$by_basename = seed_find_attachment_by_basename( $filename );
-	if ( $by_basename ) {
-		return (int) $by_basename;
-	}
-
-	$filetype = wp_check_filetype( $filename );
-	$attach   = array(
-		'post_mime_type' => $filetype['type'] ?? 'image/png',
-		'post_title'     => sanitize_file_name( $attachment_name ),
-		'post_content'   => '',
-		'post_status'    => 'inherit',
-	);
-	$id = wp_insert_attachment( $attach, $path, 0 );
-	require_once ABSPATH . 'wp-admin/includes/image.php';
-	$metadata = wp_generate_attachment_metadata( $id, $path );
-	wp_update_attachment_metadata( $id, $metadata );
-	WP_CLI::log( 'registered existing ' . $filename . ' -> #' . $id );
-	return (int) $id;
+	WP_CLI::log( 'sideloaded ' . $filename . ' -> #' . $tid );
+	return (int) $tid;
 }
 
-function seed_find_attachment_by_basename( string $basename ): ?int {
+function seed_find_attachment_by_media_id( string $media_id ): ?int {
 	global $wpdb;
-	$sql = $wpdb->prepare(
+	$prefix = $wpdb->esc_like( $media_id . 'mv2' );
+	$sql    = $wpdb->prepare(
 		"SELECT ID FROM {$wpdb->posts} p
 		 JOIN {$wpdb->postmeta} pm ON pm.post_id = p.ID AND pm.meta_key = '_wp_attached_file'
-		 WHERE p.post_type = 'attachment' AND pm.meta_value = %s LIMIT 1",
-		$basename
+		 WHERE p.post_type = 'attachment'
+		   AND SUBSTRING_INDEX( pm.meta_value, '/', -1 ) LIKE %s
+		 ORDER BY p.ID ASC LIMIT 1",
+		$prefix . '%'
 	);
 	$id = $wpdb->get_var( $sql );
 	return $id ? (int) $id : null;
