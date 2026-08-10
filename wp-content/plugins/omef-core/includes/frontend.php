@@ -251,6 +251,72 @@ function omef_output_episode_schema(): void {
 }
 add_action( 'wp_head', 'omef_output_episode_schema' );
 
+function omef_output_product_schema(): void {
+	if ( ! is_product() ) {
+		return;
+	}
+
+	$product = wc_get_product( get_queried_object_id() );
+	if ( ! $product instanceof WC_Product ) {
+		return;
+	}
+
+	$description = $product->get_short_description();
+	if ( ! $description ) {
+		$description = wp_trim_words( wp_strip_all_tags( $product->get_description() ), 40 );
+	}
+
+	$availability = array(
+		'instock'     => 'https://schema.org/InStock',
+		'outofstock'  => 'https://schema.org/OutOfStock',
+		'onbackorder' => 'https://schema.org/BackOrder',
+	)[ $product->get_stock_status() ] ?? null;
+
+	if ( $product->is_type( 'variable' ) ) {
+		$offers = array_filter(
+			array(
+				'@type'         => 'AggregateOffer',
+				'priceCurrency' => get_woocommerce_currency(),
+				'lowPrice'      => (float) $product->get_variation_price( 'min' ),
+				'highPrice'     => (float) $product->get_variation_price( 'max' ),
+				'offerCount'    => count( $product->get_children() ) ?: null,
+				'availability'  => $availability,
+				'url'           => get_permalink( $product->get_id() ),
+			)
+		);
+	} else {
+		$offers = array_filter(
+			array(
+				'@type'         => 'Offer',
+				'priceCurrency' => get_woocommerce_currency(),
+				'price'         => (float) $product->get_price(),
+				'availability'  => $availability,
+				'url'           => get_permalink( $product->get_id() ),
+			)
+		);
+	}
+
+	$distillery = get_post_meta( $product->get_id(), '_omef_distillery', true );
+	$image_id   = $product->get_image_id();
+
+	$schema = array_filter(
+		array(
+			'@context'    => 'https://schema.org',
+			'@type'       => 'Product',
+			'name'        => $product->get_name(),
+			'description' => $description ?: null,
+			'sku'         => $product->get_sku() ?: null,
+			'image'       => $image_id ? wp_get_attachment_image_url( $image_id, 'large' ) : null,
+			'url'         => get_permalink( $product->get_id() ),
+			'brand'       => $distillery ? array( '@type' => 'Brand', 'name' => $distillery ) : null,
+			'offers'      => $offers,
+		)
+	);
+
+	echo '<script type="application/ld+json">' . wp_json_encode( $schema, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>';
+}
+add_action( 'wp_head', 'omef_output_product_schema' );
+
 function omef_render_alcohol_notice(): void {
 	echo '<p class="omef-alcohol-notice" role="note">מכירת אלכוהול מגיל 18 בלבד. יש לצרוך באחריות.</p>';
 }

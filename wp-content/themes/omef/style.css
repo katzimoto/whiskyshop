@@ -253,12 +253,17 @@ select:focus-visible {
 }
 
 .woocommerce ul.products li.product {
+  display: flex;
+  flex-direction: column;
   margin: 0 !important;
   width: auto !important;
 }
 
 .woocommerce ul.products li.product img {
+  aspect-ratio: 3 / 4;
   border-radius: 0;
+  object-fit: cover;
+  width: 100%;
 }
 
 .woocommerce ul.products li.product .woocommerce-loop-product__title {

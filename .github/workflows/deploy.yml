@@ -3,6 +3,8 @@ name: Deploy to VPS
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 concurrency:
@@ -21,9 +23,29 @@ jobs:
         run: |
           find wp-content/plugins/omef-core wp-content/themes/omef wp-content/mu-plugins -name '*.php' -print0 | xargs -0 -n1 php -l || exit 1
 
+  test:
+    name: PHPUnit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+      - name: Run unit tests
+        run: vendor/bin/phpunit
+
   deploy:
     name: Redeploy site on VPS
-    needs: lint
+    needs: [lint, test]
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -123,3 +145,31 @@ jobs:
           if [ -n "$REMOTE_CMD" ]; then
             ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "$REMOTE_CMD"
           fi
+
+      - name: Smoke test the deployed site
+        env:
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          ssh -p "$SSH_PORT" "$SSH_USER@$SSH_HOST" "cd '$DEPLOY_PATH' && bash -s" <<'REMOTE'
+          set -e
+          PORT="$(grep -m1 '^WORDPRESS_PORT=' .env 2>/dev/null | cut -d= -f2)"
+          PORT="${PORT:-8080}"
+
+          for attempt in 1 2 3 4 5; do
+            status=$(curl -s -o /tmp/omef-smoke.html -w '%{http_code}' "http://localhost:${PORT}/" || echo "000")
+            if [ "$status" = "200" ] && ! grep -qi "there has been a critical error\|error establishing a database connection" /tmp/omef-smoke.html; then
+              echo "Smoke test passed (HTTP $status)."
+              rm -f /tmp/omef-smoke.html
+              exit 0
+            fi
+            echo "Smoke test attempt $attempt got HTTP $status, retrying..."
+            sleep 5
+          done
+
+          echo "Smoke test failed: the homepage did not come back healthy after this deploy."
+          cat /tmp/omef-smoke.html
+          exit 1
+          REMOTE
