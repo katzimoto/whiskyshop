@@ -627,3 +627,30 @@ select:focus-visible {
     grid-template-columns: repeat(2, 1fr) !important;
   }
 }
+
+/* Front page: upcoming tastings */
+.omef-event-card {
+  background: var(--omef-ink-soft);
+  border: 1px solid color-mix(in srgb, var(--omef-paper) 12%, transparent);
+  border-radius: 1rem;
+  padding: 1.5rem;
+}
+
+.omef-event-card .wp-block-post-title {
+  margin: 0 0 0.5rem;
+}
+
+.omef-event-card .wp-block-post-excerpt {
+  color: color-mix(in srgb, var(--omef-paper) 78%, transparent);
+  margin: 0;
+}
+
+/* Shipping note on hero */
+.omef-shipping-note {
+  border: 1px dashed color-mix(in srgb, var(--omef-ink) 40%, transparent);
+  border-radius: 999px;
+  display: inline-block;
+  font-weight: 700;
+  margin-top: 2rem;
+  padding: 0.7rem 1.4rem;
+}
