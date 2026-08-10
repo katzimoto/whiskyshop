@@ -1,4 +1,6 @@
 .env
+/vendor/
+.phpunit.result.cache
 wp-content/uploads/*
 !wp-content/uploads/.gitkeep
 wp-content/upgrade/

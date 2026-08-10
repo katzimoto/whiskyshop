@@ -1,0 +1,12 @@
+{
+    "name": "omef/whiskyshop",
+    "description": "Test tooling for the omef-core plugin.",
+    "type": "project",
+    "license": "proprietary",
+    "require-dev": {
+        "phpunit/phpunit": "^11.5"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

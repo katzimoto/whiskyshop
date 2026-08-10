@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="wp-content/plugins/omef-core/tests/bootstrap.php"
+         colors="true"
+         failOnWarning="true"
+         failOnDeprecation="true">
+    <testsuites>
+        <testsuite name="omef-core">
+            <directory>wp-content/plugins/omef-core/tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
