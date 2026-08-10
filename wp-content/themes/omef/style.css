@@ -16,6 +16,17 @@ Text Domain: omef
   --omef-paper-deep: #e7dece;
   --omef-brass: #e0994f;
   --omef-clay: #a9482e;
+
+  /* Card / surface tokens: product photography arrives with inconsistent
+     (transparent or flat-white) backgrounds, so every product image sits on
+     the same paper-toned card surface rather than the page background. */
+  --omef-card-bg: var(--omef-paper);
+  --omef-card-radius: 0.85rem;
+  --omef-radius-sm: 0.5rem;
+  --omef-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --omef-shadow-md: 0 12px 28px rgba(0, 0, 0, 0.35);
+  --omef-border-soft: color-mix(in srgb, var(--omef-paper) 16%, transparent);
+  --omef-transition: 180ms ease;
 }
 
 *,
@@ -96,9 +107,21 @@ select:focus-visible {
   opacity: 0.8;
 }
 
+.omef-header-cart .wc-block-mini-cart__button {
+  position: relative;
+}
+
 .omef-header-cart .wc-block-mini-cart__badge {
   background: var(--omef-brass);
   color: var(--omef-ink);
+}
+
+.omef-site-header {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--omef-ink) 92%, transparent);
 }
 
 .omef-hero {
@@ -106,7 +129,20 @@ select:focus-visible {
     linear-gradient(115deg, rgba(28, 23, 18, 0.98), rgba(28, 23, 18, 0.82)),
     radial-gradient(circle at 80% 20%, rgba(224, 153, 79, 0.35), transparent 28%);
   color: var(--omef-paper);
-  min-height: 62vh;
+  min-height: 48vh;
+}
+
+/* Query-loop sections (upcoming tastings, workshops) render as few as one
+   item; a fixed 3-column grid then leaves large empty tracks, so the grid
+   sizes to its content instead of always reserving three columns. */
+.omef-event-card,
+.omef-episode-card {
+  height: 100%;
+}
+
+main .wp-block-post-template.is-layout-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)) !important;
+  justify-content: start;
 }
 
 .omef-eyebrow {
@@ -259,16 +295,40 @@ select:focus-visible {
   width: auto !important;
 }
 
+.woocommerce ul.products li.product a.woocommerce-loop-product__link {
+  display: flex;
+  flex-direction: column;
+}
+
 .woocommerce ul.products li.product img {
   aspect-ratio: 3 / 4;
-  border-radius: 0;
-  object-fit: cover;
+  background: var(--omef-card-bg);
+  border-radius: var(--omef-card-radius);
+  box-shadow: var(--omef-shadow-sm);
+  object-fit: contain;
+  padding: 1.1rem;
+  transition: box-shadow var(--omef-transition), transform var(--omef-transition);
   width: 100%;
+}
+
+.woocommerce ul.products li.product:hover img {
+  box-shadow: var(--omef-shadow-md);
+  transform: translateY(-3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .woocommerce ul.products li.product:hover img {
+    transform: none;
+  }
 }
 
 .woocommerce ul.products li.product .woocommerce-loop-product__title {
   font-weight: 700;
   margin-block: 0.75rem 0.2rem;
+}
+
+.woocommerce ul.products li.product .button {
+  margin-top: auto;
 }
 
 .omef-product-page .woocommerce-breadcrumb {
@@ -279,6 +339,22 @@ select:focus-visible {
 
 .omef-product-page div.product .woocommerce-product-gallery {
   max-width: 34rem;
+}
+
+.omef-product-page .woocommerce-product-gallery__image img {
+  background: var(--omef-card-bg);
+  border-radius: var(--omef-card-radius);
+  box-shadow: var(--omef-shadow-sm);
+  padding: 1.5rem;
+}
+
+.woocommerce-cart-form .product-thumbnail img,
+.woocommerce-checkout-review-order-table img,
+.wc-block-mini-cart-items img {
+  background: var(--omef-card-bg);
+  border-radius: var(--omef-radius-sm);
+  max-width: 4.5rem;
+  padding: 0.4rem;
 }
 
 .omef-product-page div.product .summary {
@@ -377,6 +453,111 @@ select:focus-visible {
   width: 100%;
 }
 
+/* Native form controls: WooCommerce/browser defaults render light-on-light,
+   so every text input, select and checkbox/radio is re-themed for the dark
+   palette in one place rather than per page. */
+.woocommerce form .form-row input.input-text,
+.woocommerce form .form-row textarea,
+.woocommerce form .form-row select,
+.woocommerce table.shop_table .quantity input.qty,
+.woocommerce #order_comments,
+.omef-cart-page input[type="text"],
+#coupon_code {
+  background: color-mix(in srgb, var(--omef-paper) 6%, transparent);
+  border: 1px solid var(--omef-border-soft);
+  border-radius: var(--omef-radius-sm);
+  color: var(--omef-paper);
+  padding: 0.7rem 0.8rem;
+  transition: border-color var(--omef-transition);
+}
+
+.woocommerce form .form-row input.input-text::placeholder,
+.woocommerce form .form-row textarea::placeholder,
+#coupon_code::placeholder {
+  color: color-mix(in srgb, var(--omef-paper) 55%, transparent);
+}
+
+.woocommerce form .form-row input.input-text:focus,
+.woocommerce form .form-row textarea:focus,
+.woocommerce form .form-row select:focus,
+.woocommerce table.shop_table .quantity input.qty:focus,
+#coupon_code:focus {
+  border-color: var(--omef-brass);
+  outline: none;
+}
+
+.woocommerce form .form-row select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23f4efe5' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-position: left 0.9rem center;
+  background-repeat: no-repeat;
+  padding-inline-start: 2rem;
+}
+
+.woocommerce-ordering select,
+.woocommerce-ordering .orderby {
+  appearance: none;
+  background: color-mix(in srgb, var(--omef-paper) 6%, transparent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23f4efe5' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+  background-position: left 0.9rem center;
+  background-repeat: no-repeat;
+  border: 1px solid var(--omef-border-soft);
+  border-radius: 999px;
+  color: var(--omef-paper);
+  padding: 0.55rem 2rem 0.55rem 1.1rem;
+}
+
+.woocommerce input[type="checkbox"],
+.woocommerce input[type="radio"],
+.omef-checkout-page input[type="checkbox"],
+.omef-checkout-page input[type="radio"],
+.omef-cart-page input[type="checkbox"],
+.omef-cart-page input[type="radio"] {
+  accent-color: var(--omef-brass);
+}
+
+/* Returning-customer / coupon toggle notices default to a light-blue WC
+   panel (either the classic .woocommerce-info style or the newer
+   wc-block-components-notice-banner used inside the classic checkout
+   shortcode) that clashes hard with the dark palette. */
+.woocommerce-notices-wrapper .woocommerce-info,
+.woocommerce-form-login,
+.woocommerce-form-coupon,
+.checkout_coupon,
+.woocommerce-info,
+.wc-block-components-notice-banner.is-info {
+  background: color-mix(in srgb, var(--omef-paper) 8%, transparent);
+  border: 0;
+  border-inline-start: 3px solid var(--omef-brass);
+  color: var(--omef-paper);
+}
+
+.woocommerce-info::before {
+  color: var(--omef-brass);
+}
+
+.wc-block-components-notice-banner.is-info svg {
+  fill: var(--omef-brass);
+}
+
+.wc-block-components-notice-banner.is-info a {
+  color: var(--omef-paper);
+}
+
+.woocommerce form.checkout .payment_box {
+  background: color-mix(in srgb, var(--omef-paper) 10%, transparent) !important;
+  border-radius: var(--omef-radius-sm);
+  color: var(--omef-paper) !important;
+}
+
+.woocommerce form.checkout .payment_box::before {
+  border-bottom-color: color-mix(in srgb, var(--omef-paper) 10%, transparent) !important;
+}
+
+.woocommerce form.checkout .payment_box input.input-text {
+  background: color-mix(in srgb, var(--omef-ink) 60%, transparent) !important;
+}
+
 .omef-product-facts {
   border-block: 1px solid var(--omef-paper-deep);
   margin-block: 1.5rem;
@@ -413,6 +594,7 @@ select:focus-visible {
 
 .omef-product-episodes {
   background: color-mix(in srgb, var(--omef-paper) 8%, transparent);
+  clear: both;
   margin-top: 3rem;
   padding: clamp(1.5rem, 4vw, 3rem);
 }
@@ -510,6 +692,10 @@ select:focus-visible {
   font-weight: 700;
 }
 
+.omef-age-gate__confirm input[type="checkbox"] {
+  accent-color: var(--omef-clay);
+}
+
 .omef-age-gate__card button {
   background: var(--omef-ink);
   border: 0;
@@ -529,6 +715,13 @@ select:focus-visible {
 .omef-age-gate__leave {
   font-size: 0.9rem;
   margin-bottom: 0;
+}
+
+/* The theme's global link color (paper, for the dark page background) wins
+   the cascade over the card's ink text color, making this link invisible
+   against the card's paper background. */
+.omef-age-gate__card a {
+  color: var(--omef-ink);
 }
 
 .omef-contact-form {
