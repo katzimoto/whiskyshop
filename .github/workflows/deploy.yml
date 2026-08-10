@@ -1,9 +1,15 @@
 name: Deploy to VPS
 
+# Fires once the CI workflow (lint + PHPUnit) finishes on main — i.e. after a
+# PR merges — rather than on every push directly, so a red CI run never
+# reaches the VPS. workflow_run's branch filter only matches runs whose
+# workflow executed against main, which excludes CI runs triggered by
+# pull_request (those run against the PR's head branch), so this only fires
+# for genuine pushes to main.
 on:
-  push:
-    branches: [main]
-  pull_request:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
     branches: [main]
   workflow_dispatch:
 
@@ -12,43 +18,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
-    name: PHP syntax check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install PHP
-        run: sudo apt-get update && sudo apt-get install -y php-cli
-      - name: Lint custom plugin and theme
-        run: |
-          find wp-content/plugins/omef-core wp-content/themes/omef wp-content/mu-plugins -name '*.php' -print0 | xargs -0 -n1 php -l || exit 1
-
-  test:
-    name: PHPUnit
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-          coverage: none
-      - name: Cache Composer dependencies
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: composer-${{ hashFiles('composer.lock') }}
-      - name: Install dependencies
-        run: composer install --no-interaction --prefer-dist
-      - name: Run unit tests
-        run: vendor/bin/phpunit
-
   deploy:
     name: Redeploy site on VPS
-    needs: [lint, test]
-    if: github.event_name != 'pull_request'
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.head_sha || 'main' }}
 
       - name: Install rsync
         run: sudo apt-get update && sudo apt-get install -y rsync

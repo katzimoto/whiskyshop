@@ -1,0 +1,39 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  lint:
+    name: PHP syntax check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PHP
+        run: sudo apt-get update && sudo apt-get install -y php-cli
+      - name: Lint custom plugin and theme
+        run: |
+          find wp-content/plugins/omef-core wp-content/themes/omef wp-content/mu-plugins -name '*.php' -print0 | xargs -0 -n1 php -l || exit 1
+
+  test:
+    name: PHPUnit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ hashFiles('composer.lock') }}
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist
+      - name: Run unit tests
+        run: vendor/bin/phpunit
