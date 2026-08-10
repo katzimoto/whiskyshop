@@ -250,6 +250,33 @@
 
 .omef-table__actions {
   text-align: left;
+  white-space: nowrap;
+}
+
+.omef-inline-input {
+  border: 1px solid color-mix(in srgb, var(--omef-ink) 25%, transparent);
+  font: inherit;
+  padding: 0.4rem 0.5rem;
+}
+
+.omef-inline-input--price {
+  width: 6rem;
+}
+
+.omef-inline-stock {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.omef-inline-input--qty {
+  width: 4.5rem;
+}
+
+.omef-link-button--save {
+  color: var(--omef-ok);
+  font-weight: 700;
+  margin-inline-end: 0.75rem;
+  text-decoration: none;
 }
 
 .omef-empty {

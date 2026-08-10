@@ -93,6 +93,7 @@ function omef_admin_shape_product_summary( WC_Product $product ): array {
 		'image'         => wp_get_attachment_image_url( $product->get_image_id(), 'thumbnail' ) ?: '',
 		'priceHtml'     => wp_kses_post( $product->get_price_html() ),
 		'regularPrice'  => $effective['regularPrice'],
+		'manageStock'   => $effective['manageStock'],
 		'stockStatus'   => $effective['stockStatus'],
 		'stockQuantity' => $effective['stockQuantity'],
 		'categories'    => is_wp_error( $categories ) ? array() : $categories,
@@ -351,6 +352,54 @@ function omef_products_save(): void {
 	);
 }
 add_action( 'wp_ajax_omef_products_save', 'omef_products_save' );
+
+/**
+ * Lightweight price/stock update for the product list's inline quick-edit,
+ * so the admin doesn't have to open the full edit form just to bump a price
+ * or restock count. Mirrors the price/stock branch of omef_products_save()
+ * for sample-priced (variable) vs. plain products, leaving every other
+ * field untouched.
+ */
+function omef_products_quick_update(): void {
+	omef_dashboard_guard( 'manage_woocommerce' );
+
+	$id      = absint( $_POST['id'] ?? 0 );
+	$product = $id ? wc_get_product( $id ) : null;
+	if ( ! $product ) {
+		wp_send_json_error( array( 'message' => 'המוצר לא נמצא.' ), 404 );
+	}
+
+	$regular_price = wc_format_decimal( sanitize_text_field( wp_unslash( $_POST['regular_price'] ?? '0' ) ) );
+	$has_quantity  = isset( $_POST['stock_quantity'] ) && '' !== trim( wp_unslash( $_POST['stock_quantity'] ) );
+	$stock_qty     = $has_quantity ? absint( $_POST['stock_quantity'] ) : null;
+	$manage_stock  = $has_quantity;
+	$stock_status  = in_array( $_POST['stock_status'] ?? '', array( 'instock', 'outofstock', 'onbackorder' ), true )
+		? sanitize_key( $_POST['stock_status'] )
+		: 'instock';
+
+	$is_sample = (bool) get_post_meta( $id, '_omef_sample_price', true );
+
+	if ( $is_sample ) {
+		update_post_meta( $id, '_omef_full_price', (float) $regular_price );
+		omef_ensure_sample_variations( $id, (float) get_post_meta( $id, '_omef_sample_price', true ) );
+		omef_admin_sync_full_bottle_stock( $id, $manage_stock, $stock_qty, $stock_status );
+	} else {
+		$product->set_regular_price( $regular_price );
+		$product->set_manage_stock( $manage_stock );
+		if ( $manage_stock ) {
+			$product->set_stock_quantity( $stock_qty ?? 0 );
+			$product->set_stock_status( ( $stock_qty ?? 0 ) > 0 ? 'instock' : 'outofstock' );
+		} else {
+			$product->set_stock_status( $stock_status );
+		}
+		$product->save();
+	}
+
+	wc_delete_product_transients( $id );
+
+	wp_send_json_success( array( 'product' => omef_admin_shape_product_summary( wc_get_product( $id ) ) ) );
+}
+add_action( 'wp_ajax_omef_products_quick_update', 'omef_products_quick_update' );
 
 function omef_products_delete(): void {
 	omef_dashboard_guard( 'manage_woocommerce' );
