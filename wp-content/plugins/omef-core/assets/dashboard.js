@@ -231,35 +231,95 @@
 			root.querySelector( '#omef-product-onsale' ).addEventListener( 'change', function ( e ) {
 				renderProductList( root, Object.assign( {}, filters, { on_sale: e.target.checked ? '1' : '' } ) );
 			} );
-			root.querySelectorAll( '[data-delete-product]' ).forEach( function ( btn ) {
-				btn.addEventListener( 'click', function () {
-					if ( ! window.confirm( 'למחוק את המוצר לצמיתות?' ) ) {
-						return;
-					}
-					api( 'omef_products_delete', { method: 'POST', data: { id: btn.dataset.deleteProduct } } )
-						.then( function () {
-							toast( 'המוצר נמחק.' );
-							renderProductList( root, filters );
-						} )
-						.catch( onError );
-				} );
+			root.querySelectorAll( '[data-product-row]' ).forEach( function ( row ) {
+				bindProductRow( row, root, filters );
 			} );
 		} ).catch( function ( err ) {
 			root.innerHTML = errorBlock( err );
 		} );
 	}
 
+	function bindProductRow( row, root, filters ) {
+		var deleteBtn = row.querySelector( '[data-delete-product]' );
+		deleteBtn.addEventListener( 'click', function () {
+			if ( ! window.confirm( 'למחוק את המוצר לצמיתות?' ) ) {
+				return;
+			}
+			api( 'omef_products_delete', { method: 'POST', data: { id: deleteBtn.dataset.deleteProduct } } )
+				.then( function () {
+					toast( 'המוצר נמחק.' );
+					renderProductList( root, filters );
+				} )
+				.catch( onError );
+		} );
+
+		var saveBtn = row.querySelector( '[data-save-product]' );
+		row.querySelectorAll( '.omef-inline-input' ).forEach( function ( input ) {
+			input.addEventListener( 'input', function () {
+				saveBtn.hidden = false;
+			} );
+			input.addEventListener( 'change', function () {
+				saveBtn.hidden = false;
+			} );
+			input.addEventListener( 'keydown', function ( e ) {
+				if ( e.key === 'Enter' ) {
+					e.preventDefault();
+					saveQuickEditRow( row, saveBtn, root, filters );
+				}
+			} );
+		} );
+		saveBtn.addEventListener( 'click', function () {
+			saveQuickEditRow( row, saveBtn, root, filters );
+		} );
+	}
+
+	function saveQuickEditRow( row, saveBtn, root, filters ) {
+		var id = row.dataset.productRow;
+		var data = {
+			id: id,
+			regular_price: row.querySelector( '[data-field="regular_price"]' ).value || 0,
+			stock_quantity: row.querySelector( '[data-field="stock_quantity"]' ).value,
+			stock_status: row.querySelector( '[data-field="stock_status"]' ).value
+		};
+
+		saveBtn.disabled = true;
+		api( 'omef_products_quick_update', { method: 'POST', data: data } )
+			.then( function ( result ) {
+				var wrapper = document.createElement( 'tbody' );
+				wrapper.innerHTML = productRow( result.product );
+				var newRow = wrapper.firstElementChild;
+				row.replaceWith( newRow );
+				bindProductRow( newRow, root, filters );
+				toast( 'המחיר והמלאי עודכנו.' );
+			} )
+			.catch( onError )
+			.finally( function () {
+				saveBtn.disabled = false;
+			} );
+	}
+
+	var STOCK_STATUS_LABELS = { instock: 'במלאי', outofstock: 'אזל', onbackorder: 'בהזמנה מראש' };
+
 	function productRow( p ) {
-		var stock = p.stockStatus === 'instock' ? 'במלאי' : ( p.stockStatus === 'onbackorder' ? 'בהזמנה מראש' : 'אזל' );
-		var stockQty = p.stockQuantity !== null && p.stockQuantity !== undefined ? ' (' + p.stockQuantity + ')' : '';
+		var qtyValue = p.manageStock && p.stockQuantity !== null && p.stockQuantity !== undefined ? p.stockQuantity : '';
 		return (
-			'<tr>' +
+			'<tr data-product-row="' + p.id + '">' +
 			'<td class="omef-table__thumb" data-label="">' + ( p.image ? '<img src="' + escapeHtml( p.image ) + '" alt="">' : '' ) + '</td>' +
 			'<td data-label="מוצר"><a href="#/products/' + p.id + '">' + escapeHtml( p.title ) + '</a>' + ( p.onSale ? ' <span class="omef-badge omef-badge--sale">במבצע</span>' : '' ) + ( p.hasSample ? ' <span class="omef-badge">דגימה 30 מ"ל</span>' : '' ) + '</td>' +
-			'<td data-label="מחיר">' + p.priceHtml + '</td>' +
-			'<td data-label="מלאי"><span class="omef-badge omef-badge--' + ( p.stockStatus === 'instock' ? 'ok' : 'warn' ) + '">' + stock + stockQty + '</span></td>' +
+			'<td data-label="מחיר"><input type="number" min="0" step="1" class="omef-inline-input omef-inline-input--price" data-field="regular_price" value="' + escapeHtml( p.regularPrice ) + '"></td>' +
+			'<td data-label="מלאי"><div class="omef-inline-stock">' +
+				'<input type="number" min="0" step="1" class="omef-inline-input omef-inline-input--qty" data-field="stock_quantity" placeholder="כמות" value="' + escapeHtml( qtyValue ) + '">' +
+				'<select class="omef-inline-input" data-field="stock_status">' +
+					Object.keys( STOCK_STATUS_LABELS ).map( function ( key ) {
+						return '<option value="' + key + '"' + ( key === p.stockStatus ? ' selected' : '' ) + '>' + STOCK_STATUS_LABELS[ key ] + '</option>';
+					} ).join( '' ) +
+				'</select>' +
+			'</div></td>' +
 			'<td data-label="קטגוריות">' + escapeHtml( p.categories.join( ', ' ) ) + '</td>' +
-			'<td class="omef-table__actions" data-label=""><button class="omef-link-button omef-link-button--danger" data-delete-product="' + p.id + '">מחיקה</button></td>' +
+			'<td class="omef-table__actions" data-label="">' +
+				'<button class="omef-link-button omef-link-button--save" data-save-product="' + p.id + '" hidden>שמירה</button> ' +
+				'<button class="omef-link-button omef-link-button--danger" data-delete-product="' + p.id + '">מחיקה</button>' +
+			'</td>' +
 			'</tr>'
 		);
 	}
