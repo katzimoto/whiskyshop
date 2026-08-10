@@ -19,7 +19,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y php-cli
       - name: Lint custom plugin and theme
         run: |
-          find wp-content/plugins/omef-core wp-content/themes/omef -name '*.php' -print0 | xargs -0 -n1 php -l || exit 1
+          find wp-content/plugins/omef-core wp-content/themes/omef wp-content/mu-plugins -name '*.php' -print0 | xargs -0 -n1 php -l || exit 1
 
   deploy:
     name: Redeploy site on VPS
@@ -51,6 +51,13 @@ jobs:
             -e "ssh -p '${{ secrets.SSH_PORT || '22' }}' -o StrictHostKeyChecking=accept-new" \
             ./wp-content/themes/omef/ \
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/wp-content/themes/omef/"
+
+      - name: Sync mu-plugins
+        run: |
+          rsync -az --checksum --delete --rsync-path="sudo rsync" \
+            -e "ssh -p '${{ secrets.SSH_PORT || '22' }}' -o StrictHostKeyChecking=accept-new" \
+            ./wp-content/mu-plugins/ \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:${{ secrets.DEPLOY_PATH }}/wp-content/mu-plugins/"
 
       - name: Sync stack definition
         run: |
