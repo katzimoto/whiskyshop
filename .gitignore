@@ -5,3 +5,4 @@ wp-content/uploads/*
 !wp-content/uploads/.gitkeep
 wp-content/upgrade/
 wp-content/debug.log
+/.qa/
