@@ -104,13 +104,24 @@ function omef_send_admin_new_order_notification( int $order_id ): void {
 	if ( get_option( 'omef_admin_notification_enabled', 'yes' ) !== 'yes' ) {
 		return;
 	}
+
+	// woocommerce_new_order fires inside wc_create_order(), before line items
+	// exist, so it can't be used here. Instead this runs on the status
+	// transition into a paid state (processing/completed), where the order is
+	// fully built. Send only once per order.
+	if ( get_post_meta( $order_id, '_omef_admin_notified', true ) ) {
+		return;
+	}
+	update_post_meta( $order_id, '_omef_admin_notified', '1' );
+
 	$order = wc_get_order( $order_id );
 	if ( ! $order ) {
 		return;
 	}
 	omef_send_purchase_email( $order, omef_email_admin_recipients() );
 }
-add_action( 'woocommerce_new_order', 'omef_send_admin_new_order_notification', 20, 1 );
+add_action( 'woocommerce_order_status_processing', 'omef_send_admin_new_order_notification', 20, 1 );
+add_action( 'woocommerce_order_status_completed', 'omef_send_admin_new_order_notification', 20, 1 );
 
 add_filter( 'woocommerce_email_recipient_new_order', '__return_empty_string' );
 
