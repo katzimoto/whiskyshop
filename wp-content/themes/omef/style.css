@@ -36,7 +36,11 @@ Text Domain: omef
 }
 
 html {
-  overflow-x: hidden;
+  /* overflow-x here (even alone) forces overflow-y to auto per spec, which
+     turns html into its own scroll container and breaks position:sticky
+     for any descendant -- confirmed: the sticky header stopped sticking
+     entirely once this was set. body's overflow-x below is enough to clip
+     horizontal overflow on its own. */
   scroll-behavior: smooth;
 }
 
@@ -154,14 +158,24 @@ select:focus-visible {
   color: var(--omef-ink);
 }
 
+/* position:sticky has to live on the WordPress-generated wrapper
+   (header.wp-block-template-part), not on .omef-site-header itself: a
+   sticky element only has room to stick within its own parent's box, and
+   that wrapper is a plain block sized to exactly its one child's height
+   (no room to "stick" in) while its own parent (.wp-site-blocks) spans the
+   full page. Putting position:sticky on .omef-site-header made it behave
+   as if it were static — it scrolled away with the page from pixel one. */
+header.wp-block-template-part:has(> .omef-site-header) {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
 .omef-site-header {
   /* No backdrop-filter here: it creates a new CSS containing block for
      position:fixed descendants, which traps the mobile nav's full-screen
      overlay menu inside the header's own ~78px height instead of the
      viewport (only the first nav item stays visible, the rest clip away). */
-  position: sticky;
-  top: 0;
-  z-index: 40;
   background: var(--omef-ink);
 }
 
