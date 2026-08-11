@@ -83,6 +83,44 @@ select:focus-visible {
   color: var(--omef-paper);
 }
 
+/* Mobile nav overlay: WordPress's default is an unstyled white full-screen
+   panel with black text, unrelated to the site's dark palette. !important
+   is needed to outrank the higher-specificity generated global-styles rule
+   (.wp-block-navigation:not(.has-background) …:not(.disable-default-overlay)). */
+.omef-site-header .wp-block-navigation__responsive-container.is-menu-open {
+  background-color: var(--omef-ink) !important;
+  color: var(--omef-paper) !important;
+}
+
+.omef-site-header .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content {
+  color: var(--omef-paper);
+  font-size: clamp(1.4rem, 6vw, 1.8rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  padding-block: 0.6rem;
+}
+
+.omef-site-header .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item {
+  border-bottom: 1px solid color-mix(in srgb, var(--omef-paper) 14%, transparent);
+}
+
+.omef-site-header .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item:first-child {
+  border-top: 1px solid color-mix(in srgb, var(--omef-paper) 14%, transparent);
+}
+
+.omef-site-header .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content:hover,
+.omef-site-header .wp-block-navigation__responsive-container.is-menu-open .wp-block-navigation-item__content:focus-visible {
+  color: var(--omef-brass);
+}
+
+.omef-site-header .wp-block-navigation__responsive-container-close {
+  color: var(--omef-paper);
+}
+
+.omef-site-header .wp-block-navigation__responsive-container-close:hover {
+  color: var(--omef-brass);
+}
+
 .omef-header-row {
   gap: 1rem;
 }
@@ -117,11 +155,14 @@ select:focus-visible {
 }
 
 .omef-site-header {
+  /* No backdrop-filter here: it creates a new CSS containing block for
+     position:fixed descendants, which traps the mobile nav's full-screen
+     overlay menu inside the header's own ~78px height instead of the
+     viewport (only the first nav item stays visible, the rest clip away). */
   position: sticky;
   top: 0;
   z-index: 40;
-  backdrop-filter: blur(10px);
-  background: color-mix(in srgb, var(--omef-ink) 92%, transparent);
+  background: var(--omef-ink);
 }
 
 .omef-hero {
