@@ -1,0 +1,169 @@
+{
+  "meta": {
+    "liveUrl": "https://whiskyshop.148-113-191-120.sslip.io/",
+    "auditDate": "2026-08-12",
+    "commitAudited": "e45955a",
+    "platform": "WordPress + WooCommerce (omef theme, omef-core plugin)",
+    "swarmTopology": "hierarchical-mesh",
+    "totals": { "bugs": 13, "P0": 2, "P1": 2, "P2": 5, "P3": 4, "fixed": 12, "remaining": 1 }
+  },
+  "bugs": [
+    {
+      "id": "BUG-005",
+      "title": "Full DB backups and WooCommerce/Airwallex debug logs publicly downloadable, unauthenticated",
+      "severity": "P0",
+      "route": "/wp-content/uploads/omef-backups/*, /wp-content/uploads/wc-logs/*",
+      "status": "fixed",
+      "reproducible": true,
+      "rootCauseConfirmed": true,
+      "verification": "verified",
+      "files": ["docker/nginx/default.conf", "wp-content/plugins/omef-core/includes/backup.php"],
+      "tests": []
+    },
+    {
+      "id": "BUG-006",
+      "title": "Editorial sale price displayed but never charged at checkout",
+      "severity": "P0",
+      "route": "product page, shop card, cart, checkout",
+      "status": "fixed",
+      "reproducible": true,
+      "rootCauseConfirmed": true,
+      "verification": "verified",
+      "files": ["wp-content/plugins/omef-core/includes/discounts.php", "wp-content/plugins/omef-core/tests/wp-stubs.php", "wp-content/plugins/omef-core/tests/bootstrap.php"],
+      "tests": ["wp-content/plugins/omef-core/tests/DiscountsTest.php"]
+    },
+    {
+      "id": "BUG-010",
+      "title": "Age gate hijacked robots.txt and the XML sitemap, blocking all search-engine crawling",
+      "severity": "P1",
+      "route": "/robots.txt, /wp-sitemap.xml",
+      "status": "fixed",
+      "reproducible": true,
+      "rootCauseConfirmed": true,
+      "verification": "verified",
+      "files": ["wp-content/plugins/omef-core/includes/age-gate.php", "wp-content/plugins/omef-core/tests/wp-stubs.php", "wp-content/plugins/omef-core/tests/bootstrap.php"],
+      "tests": ["wp-content/plugins/omef-core/tests/AgeGateTest.php"]
+    },
+    {
+      "id": "BUG-001",
+      "title": "Cart/checkout table content can clip off-screen on mobile",
+      "severity": "P1",
+      "route": "/cart, /checkout",
+      "status": "fixed",
+      "reproducible": true,
+      "rootCauseConfirmed": true,
+      "verification": "verified",
+      "files": ["wp-content/themes/omef/style.css"],
+      "tests": []
+    },
+    {
+      "id": "BUG-002",
+      "title": "RTL select-arrow icon rendered on wrong side (physical background-position vs logical padding)",
+      "severity": "P2",
+      "route": "checkout country/state selects, shop sort dropdown",
+      "status": "fixed",
+      "reproducible": true,
+      "rootCauseConfirmed": true,
+      "verification": "verified",
+      "files": ["wp-content/themes/omef/style.css"],
+      "tests": []
+    },
+    {
+      "id": "BUG-003",
+      "title": "Tastings gallery mobile 2-column override is dead CSS due to specificity loss",
+      "severity": "P2",
+      "route": "/tastings archive",
+      "status": "fixed",
+      "reproducible": true,
+      "rootCauseConfirmed": true,
+      "verification": "verified",
+      "files": ["wp-content/themes/omef/style.css"],
+      "tests": []
+    },
+    {
+      "id": "BUG-007",
+      "title": "Podcast admin AJAX endpoints gated at edit_posts instead of manage_woocommerce (SSRF-adjacent)",
+      "severity": "P2",
+      "route": "wp-admin dashboard, podcast settings/import AJAX",
+      "status": "fixed",
+      "reproducible": true,
+      "rootCauseConfirmed": true,
+      "verification": "verified_by_code_review",
+      "files": ["wp-content/plugins/omef-core/includes/podcast.php"],
+      "tests": []
+    },
+    {
+      "id": "BUG-011",
+      "title": "Checkout validation error summary invisible (paper-colored text on light-pink banner)",
+      "severity": "P2",
+      "route": "/checkout",
+      "status": "fixed",
+      "reproducible": true,
+      "rootCauseConfirmed": true,
+      "verification": "verified",
+      "files": ["wp-content/themes/omef/style.css"],
+      "tests": []
+    },
+    {
+      "id": "BUG-012",
+      "title": "Zero-result search rendered a completely blank page",
+      "severity": "P2",
+      "route": "/?s=<term>",
+      "status": "fixed",
+      "reproducible": true,
+      "rootCauseConfirmed": true,
+      "verification": "verified",
+      "files": ["wp-content/themes/omef/templates/index.html"],
+      "tests": []
+    },
+    {
+      "id": "BUG-004",
+      "title": "Age-gate error text uses hardcoded hex instead of --omef-clay token",
+      "severity": "P3",
+      "route": "age gate",
+      "status": "fixed",
+      "reproducible": true,
+      "rootCauseConfirmed": true,
+      "verification": "verified_by_code_review",
+      "files": ["wp-content/themes/omef/style.css"],
+      "tests": []
+    },
+    {
+      "id": "BUG-008",
+      "title": "Customer name interpolated unescaped into HTML order emails",
+      "severity": "P3",
+      "route": "order confirmation email",
+      "status": "fixed",
+      "reproducible": true,
+      "rootCauseConfirmed": true,
+      "verification": "verified_by_code_review",
+      "files": ["wp-content/plugins/omef-core/includes/email-settings.php"],
+      "tests": []
+    },
+    {
+      "id": "BUG-013",
+      "title": "Age-gate page has no <title> tag",
+      "severity": "P3",
+      "route": "age gate",
+      "status": "fixed",
+      "reproducible": true,
+      "rootCauseConfirmed": true,
+      "verification": "verified",
+      "files": ["wp-content/themes/omef/age-gate.php"],
+      "tests": []
+    },
+    {
+      "id": "BUG-009",
+      "title": "Backup DB password passed on mysqldump command line (visible via ps/procfs)",
+      "severity": "P3",
+      "route": "n/a (server-side backup process)",
+      "status": "confirmed",
+      "reproducible": true,
+      "rootCauseConfirmed": true,
+      "verification": "not_applicable",
+      "files": ["wp-content/plugins/omef-core/includes/backup.php"],
+      "tests": [],
+      "note": "Not fixed: safe fix requires exec()->proc_open() rewrite of a working backup path; regression risk judged to outweigh P3 severity. Documented as a recommended follow-up."
+    }
+  ]
+}

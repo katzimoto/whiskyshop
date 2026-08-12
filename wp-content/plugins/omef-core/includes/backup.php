@@ -10,6 +10,22 @@ function omef_backup_dir(): string {
 	if ( ! is_dir( $dir ) ) {
 		wp_mkdir_p( $dir );
 	}
+
+	// Backups are only ever meant to be reached through the authenticated
+	// admin-post download action below, never fetched directly. This matches
+	// the deny-all convention WooCommerce's own uploads/wc-logs ships with;
+	// the real enforcement for this site's nginx (which doesn't read
+	// .htaccess) lives in docker/nginx/default.conf, this is defense in
+	// depth for any Apache-served environment.
+	$htaccess = $dir . '/.htaccess';
+	if ( ! is_file( $htaccess ) ) {
+		file_put_contents( $htaccess, "deny from all\n" );
+	}
+	$index = $dir . '/index.html';
+	if ( ! is_file( $index ) ) {
+		file_put_contents( $index, '' );
+	}
+
 	return $dir;
 }
 

@@ -549,6 +549,14 @@ main .wp-block-post-template.is-layout-grid {
   padding-inline-start: 2rem;
 }
 
+/* The icon offset above is physical (CSS background-position has no logical
+   equivalent with reliable browser support), so it has to be mirrored by
+   hand for RTL rather than flipping automatically like the logical padding
+   above it does. */
+[dir="rtl"] .woocommerce form .form-row select {
+  background-position: right 0.9rem center;
+}
+
 .woocommerce-ordering select,
 .woocommerce-ordering .orderby {
   appearance: none;
@@ -560,6 +568,12 @@ main .wp-block-post-template.is-layout-grid {
   border-radius: 999px;
   color: var(--omef-paper);
   padding: 0.55rem 2rem 0.55rem 1.1rem;
+}
+
+[dir="rtl"] .woocommerce-ordering select,
+[dir="rtl"] .woocommerce-ordering .orderby {
+  background-position: right 0.9rem center;
+  padding: 0.55rem 1.1rem 0.55rem 2rem;
 }
 
 .woocommerce input[type="checkbox"],
@@ -589,6 +603,20 @@ main .wp-block-post-template.is-layout-grid {
 
 .woocommerce-info::before {
   color: var(--omef-brass);
+}
+
+/* Unlike the .is-info banner above, WooCommerce's error notice banner (the
+   checkout validation summary, "the following problems were found...") keeps
+   its own light-pink background rather than picking up the dark-palette
+   treatment. The sitewide link color (theme.json) is tuned for the dark page
+   background, so without this override every link in that list -- the only
+   way the summary communicates which fields are invalid -- renders
+   near-invisible: paper-colored text on a near-white background. Same root
+   cause as the age-gate "under 18" link, fixed separately for this surface. */
+.wc-block-components-notice-banner.is-error,
+.wc-block-components-notice-banner.is-error a,
+.woocommerce-error {
+  color: var(--omef-ink);
 }
 
 .wc-block-components-notice-banner.is-info svg {
@@ -763,7 +791,7 @@ main .wp-block-post-template.is-layout-grid {
 }
 
 .omef-age-gate__error {
-  color: #9c2d1e;
+  color: var(--omef-clay);
   font-weight: 700;
 }
 
@@ -876,8 +904,18 @@ main .wp-block-post-template.is-layout-grid {
     grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
   }
 
-  .omef-workshop-gallery {
+  /* Same specificity (0,2,1) as the global .wp-block-post-template.is-layout-grid
+     override above would make this a coin-flip on source order; naming both
+     classes on one selector raises it to (0,3,1) so this one reliably wins. */
+  main .wp-block-post-template.omef-workshop-gallery.is-layout-grid {
     grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .omef-cart-page table.shop_table,
+  .omef-checkout-page table.shop_table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
 

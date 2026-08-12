@@ -6,6 +6,7 @@ defined( 'ABSPATH' ) || exit;
 <head>
 	<meta charset="<?php bloginfo( 'charset' ); ?>">
 	<meta content="width=device-width, initial-scale=1" name="viewport">
+	<title><?php echo esc_html( wp_get_document_title() ); ?></title>
 	<?php wp_head(); ?>
 </head>
 <body <?php body_class( 'omef-age-gate' ); ?>>

@@ -41,7 +41,7 @@ function omef_email_placeholders( WC_Order $order ): array {
 	$has_shipping = $shipping_lines !== '';
 
 	return array(
-		'{customer_name}'    => (string) $order->get_billing_first_name() . ' ' . (string) $order->get_billing_last_name(),
+		'{customer_name}'    => esc_html( (string) $order->get_billing_first_name() . ' ' . (string) $order->get_billing_last_name() ),
 		'{order_number}'     => (string) $order->get_order_number(),
 		'{order_date}'       => wc_format_datetime( $order->get_date_created() ),
 		'{order_status}'     => wc_get_order_status_name( $order->get_status() ),

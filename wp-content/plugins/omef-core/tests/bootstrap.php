@@ -7,4 +7,6 @@ require __DIR__ . '/wp-stubs.php';
 require dirname( __DIR__, 4 ) . '/vendor/autoload.php';
 
 require dirname( __DIR__ ) . '/includes/helpers.php';
+require dirname( __DIR__ ) . '/includes/product-meta.php';
 require dirname( __DIR__ ) . '/includes/discounts.php';
+require dirname( __DIR__ ) . '/includes/age-gate.php';

@@ -35,6 +35,44 @@ function omef_price( float $amount ): string {
 	return number_format_i18n( $amount, 0 ) . ' ₪';
 }
 
+/**
+ * omef_discount() is meta the storefront reads to render a strikethrough
+ * price; on its own it never touched what WooCommerce actually charges, so a
+ * product with an editorial sale price displayed it correctly but billed the
+ * full regular price at checkout. These filters make get_price() return the
+ * same figure that's on screen. The whisky sample-size split turns some
+ * products into a variable product with a "full bottle" and a "30 ml sample"
+ * variation sharing one parent; the editorial discount is defined once on the
+ * parent and is only meant to affect the full bottle, so the sample variation
+ * is explicitly excluded.
+ */
+function omef_discount_owner_id( $product ): int {
+	return $product->is_type( 'variation' ) ? $product->get_parent_id() : $product->get_id();
+}
+
+function omef_discount_applies_to( $product ): bool {
+	if ( ! $product->is_type( 'variation' ) ) {
+		return true;
+	}
+
+	$labels        = omef_sample_attribute_labels();
+	$attribute_key = sanitize_title( $labels['attribute'] );
+	$attributes    = $product->get_attributes();
+
+	return ( $attributes[ $attribute_key ] ?? '' ) === $labels['full'];
+}
+
+function omef_apply_discount_to_price( $price, $product ) {
+	if ( ! omef_discount_applies_to( $product ) ) {
+		return $price;
+	}
+
+	$discount = omef_discount( omef_discount_owner_id( $product ) );
+	return $discount ? (string) $discount['sale'] : $price;
+}
+add_filter( 'woocommerce_product_get_price', 'omef_apply_discount_to_price', 20, 2 );
+add_filter( 'woocommerce_product_variation_get_price', 'omef_apply_discount_to_price', 20, 2 );
+
 function omef_render_discount_price(): void {
 	global $product;
 	if ( ! is_a( $product, 'WC_Product' ) ) {

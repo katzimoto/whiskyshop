@@ -11,7 +11,7 @@ function omef_sanitize_feed_url( string $url ): string {
 }
 
 function omef_podcast_settings_get(): void {
-	omef_dashboard_guard( 'edit_posts' );
+	omef_dashboard_guard( 'manage_woocommerce' );
 
 	wp_send_json_success(
 		array(
@@ -23,7 +23,7 @@ function omef_podcast_settings_get(): void {
 add_action( 'wp_ajax_omef_podcast_settings_get', 'omef_podcast_settings_get' );
 
 function omef_podcast_settings_save(): void {
-	omef_dashboard_guard( 'edit_posts' );
+	omef_dashboard_guard( 'manage_woocommerce' );
 
 	$url = omef_sanitize_feed_url( sanitize_text_field( wp_unslash( $_POST['feed_url'] ?? '' ) ) );
 	update_option( 'omef_podcast_feed_url', $url );
@@ -33,7 +33,7 @@ function omef_podcast_settings_save(): void {
 add_action( 'wp_ajax_omef_podcast_settings_save', 'omef_podcast_settings_save' );
 
 function omef_podcast_import_ajax(): void {
-	omef_dashboard_guard( 'edit_posts' );
+	omef_dashboard_guard( 'manage_woocommerce' );
 
 	$result = omef_import_podcast_feed();
 	if ( is_wp_error( $result ) ) {

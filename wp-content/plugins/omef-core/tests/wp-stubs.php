@@ -44,6 +44,20 @@ function wc_get_product( int $product_id ) {
 	return $GLOBALS['omef_test_products'][ $product_id ] ?? false;
 }
 
+function sanitize_title( string $title ): string {
+	return strtolower( trim( $title ) );
+}
+
+$GLOBALS['omef_test_is_robots'] = false;
+function is_robots(): bool {
+	return $GLOBALS['omef_test_is_robots'];
+}
+
+$GLOBALS['omef_test_query_vars'] = array();
+function get_query_var( string $var, $default = '' ) {
+	return $GLOBALS['omef_test_query_vars'][ $var ] ?? $default;
+}
+
 /**
  * Stands in for WC_Product for tests that need is_type()/get_regular_price()/
  * get_variation_regular_price() without loading WooCommerce.
@@ -53,6 +67,18 @@ class Omef_Test_Product {
 
 	public function is_type( string $type ): bool {
 		return ( $this->data['type'] ?? 'simple' ) === $type;
+	}
+
+	public function get_id(): int {
+		return $this->data['id'] ?? 0;
+	}
+
+	public function get_parent_id(): int {
+		return $this->data['parent_id'] ?? 0;
+	}
+
+	public function get_attributes(): array {
+		return $this->data['attributes'] ?? array();
 	}
 
 	public function get_regular_price( string $context = 'view' ) {

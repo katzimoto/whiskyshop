@@ -5,8 +5,23 @@
 
 defined( 'ABSPATH' ) || exit;
 
+/**
+ * robots.txt and the WordPress core XML sitemaps are also plain page
+ * requests as far as template_redirect is concerned, so without this
+ * exclusion the gate (hooked at priority 0, ahead of core's own handlers for
+ * them) served its HTML confirmation page in place of both -- meaning no
+ * search engine could ever discover a crawlable robots.txt or sitemap for
+ * this store. Neither route exposes any age-restricted content, so
+ * exempting them doesn't weaken the gate's actual purpose.
+ */
+function omef_age_gate_bypassed_request(): bool {
+	return is_robots() || (bool) get_query_var( 'sitemap' ) || (bool) get_query_var( 'sitemap-stylesheet' );
+}
+
 function omef_age_gate_required(): bool {
-	return ! is_admin() && ! wp_doing_ajax() && ! wp_doing_cron() && ! defined( 'REST_REQUEST' ) && empty( $_COOKIE['omef_age_verified'] );
+	return ! is_admin() && ! wp_doing_ajax() && ! wp_doing_cron() && ! defined( 'REST_REQUEST' )
+		&& ! omef_age_gate_bypassed_request()
+		&& empty( $_COOKIE['omef_age_verified'] );
 }
 
 function omef_handle_age_gate(): void {

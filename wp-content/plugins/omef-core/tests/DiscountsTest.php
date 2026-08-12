@@ -75,4 +75,54 @@ final class DiscountsTest extends TestCase {
 
 		$this->assertNull( omef_discount( 10 ) );
 	}
+
+	public function test_price_filter_charges_the_editorial_sale_price_for_a_simple_product(): void {
+		$GLOBALS['omef_test_post_meta'][10] = array(
+			'_omef_sale_price' => 150,
+			'_omef_full_price' => 200,
+		);
+		$product = new Omef_Test_Product( array( 'id' => 10 ) );
+
+		$this->assertSame( '150', omef_apply_discount_to_price( '200', $product ) );
+	}
+
+	public function test_price_filter_leaves_price_untouched_without_an_active_discount(): void {
+		$product = new Omef_Test_Product( array( 'id' => 10 ) );
+
+		$this->assertSame( '200', omef_apply_discount_to_price( '200', $product ) );
+	}
+
+	public function test_price_filter_charges_the_discount_on_the_full_bottle_variation(): void {
+		$GLOBALS['omef_test_post_meta'][10] = array(
+			'_omef_sale_price' => 400,
+			'_omef_full_price' => 500,
+		);
+		$variation = new Omef_Test_Product(
+			array(
+				'id'         => 11,
+				'type'       => 'variation',
+				'parent_id'  => 10,
+				'attributes' => array( sanitize_title( 'גודל דגימה' ) => 'בקבוק מלא (700 מ"ל)' ),
+			)
+		);
+
+		$this->assertSame( '400', omef_apply_discount_to_price( '500', $variation ) );
+	}
+
+	public function test_price_filter_leaves_the_sample_variation_at_its_own_price(): void {
+		$GLOBALS['omef_test_post_meta'][10] = array(
+			'_omef_sale_price' => 400,
+			'_omef_full_price' => 500,
+		);
+		$sample = new Omef_Test_Product(
+			array(
+				'id'         => 12,
+				'type'       => 'variation',
+				'parent_id'  => 10,
+				'attributes' => array( sanitize_title( 'גודל דגימה' ) => 'דגימה (30 מ"ל)' ),
+			)
+		);
+
+		$this->assertSame( '80', omef_apply_discount_to_price( '80', $sample ) );
+	}
 }
