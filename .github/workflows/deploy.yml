@@ -16,7 +16,7 @@ jobs:
     name: PHP syntax check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Install PHP
         run: sudo apt-get update && sudo apt-get install -y php-cli
       - name: Lint custom plugin and theme
@@ -27,13 +27,13 @@ jobs:
     name: PHPUnit
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with:
           php-version: '8.3'
           coverage: none
       - name: Cache Composer dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: vendor
           key: composer-${{ hashFiles('composer.lock') }}
@@ -48,7 +48,7 @@ jobs:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install rsync
         run: sudo apt-get update && sudo apt-get install -y rsync
@@ -118,7 +118,8 @@ jobs:
           WP() { docker compose exec -T wordpress wp --allow-root "$@" < /dev/null; }
 
           echo "== WooCommerce =="
-          WP plugin is-installed woocommerce || WP plugin install woocommerce --version=11.0.0
+          WP plugin is-installed woocommerce || WP plugin install woocommerce --version=11.0.1
+          WP plugin update woocommerce --version=11.0.1
           WP plugin is-active woocommerce || WP plugin activate woocommerce
 
           echo "== payment gateways (temporary mock card until a real processor is wired up) =="

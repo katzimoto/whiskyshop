@@ -1,4 +1,4 @@
-FROM wordpress:6.8.3-php8.3-fpm
+FROM wordpress:7.0.3-php8.3-fpm
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends msmtp-mta mariadb-client wget $PHPIZE_DEPS \

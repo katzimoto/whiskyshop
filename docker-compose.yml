@@ -1,6 +1,6 @@
 services:
   nginx:
-    image: nginx:1.27-alpine
+    image: nginx:1.31-alpine
     ports:
       - "${WORDPRESS_PORT:-8080}:80"
     volumes:
@@ -52,18 +52,19 @@ services:
     restart: unless-stopped
 
   redis:
-    image: redis:7-alpine
+    image: redis:8-alpine
     volumes:
       - redis:/data
     restart: unless-stopped
 
   database:
-    image: mariadb:11.4
+    image: mariadb:11.8
     environment:
       MARIADB_DATABASE: ${DB_NAME}
       MARIADB_USER: ${DB_USER}
       MARIADB_PASSWORD: ${DB_PASSWORD}
       MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MARIADB_AUTO_UPGRADE: 1
     volumes:
       - database:/var/lib/mysql
     healthcheck:
@@ -74,7 +75,7 @@ services:
     restart: unless-stopped
 
   mailpit:
-    image: axllent/mailpit:v1.27.4
+    image: axllent/mailpit:v1.30.7
     ports:
       - "8025:8025"
     restart: unless-stopped
